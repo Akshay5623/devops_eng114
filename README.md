@@ -49,3 +49,9 @@ Companies need a development environment as it is great for streamlined workflow
 - Move test.txt from current location to devops folder `mv - test.txt devops`
 - Copy paste `cp path_of_data path_of_destination`
 > May need to use sudo at the beginning of the command if permission is denied.
+
+## File permissions
+- READ `r` WRITE `w` EXECUTE `x`
+- How to check file permission `ll`
+- Change permissions `chmod permission file_name`
+
