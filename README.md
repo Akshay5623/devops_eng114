@@ -26,6 +26,11 @@ The following image shows how companies traditionally worked and how companies t
 - Flexibile
 - Robustness - faster release of software
 - Cost effective
+- Renews focus on the customers.
+- Unites teams for faster product shipments.
+- Simplifies development focus.
+- Introduces automation to the development process.
+- Supports end-to-end responsibility.
 
 ## What is a development environment? Why is it needed?
 
@@ -36,11 +41,12 @@ Companies need a development environment as it is great for streamlined workflow
 ## Common linux commands
 - Update ubuntu `sudo apt-get update -y`
 - Upgrade ubuntu `sudo apt-get upgrade -y`
-- Install nginx or any package `sudo apt-get install nginx -y`
-- Check status of nginx or any package `systemctl status nginx`
+- Install nginx `sudo apt-get install nginx -y`
+- Check status of nginx `systemctl status nginx`
+> nginx is used as an example, can be any compatable package, just change nginx in command for the relevant package name.
 - Who am I `uname` or `uname -a`
 - Where am i  `pwd`
-- Create folder in linux = mkdir dir-name
+- Create folder in linux = `mkdir dir-name`
 - How to check folder/files etc = `ls`
 - How to check hidden folders `ls -a`
 - Change directory `cd nameof-dir`
@@ -54,4 +60,30 @@ Companies need a development environment as it is great for streamlined workflow
 - READ `r` WRITE `w` EXECUTE `x`
 - How to check file permission `ll`
 - Change permissions `chmod permission file_name`
+
+ 
+## chmod Absolute Mode
+
+• Uses octal numbers. 
+
+- 4 = read 
+- 2 = write 
+- 1 = execute 
+
+• Add numbers of permissions you wish to grant. 
+
+- Sum of these is what you provide. 
+- Read, write, execute is 7 (4 + 2 + 1). 
+- Read, write is 6 (4 + 2). 
+
+• Complete permissions are expressed as three-digit number. 
+
+- Each digit corresponds to a context (owner, group, other).
+
+• E.g. chmod 764 file1 (user = rwx, group = rw and others = read on file1)
+
+chmod 700 file1 (user = rwx)
+
+chmod 640 file1 (user = rw, group = r)
+
 
