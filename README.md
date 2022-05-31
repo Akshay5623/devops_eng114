@@ -86,4 +86,12 @@ chmod 700 file1 (user = rwx)
 
 chmod 640 file1 (user = rw, group = r)
 
-
+## Bash scripting
+- Create a file called provision.sh within the VM
+- Change permission of this file `chmod +x provision.sh`
+- First line MUST BE starting with `#!/bin/bash`
+- Update and upgrade ubuntu
+- Install nginx
+- Start nginx
+- `enable nginx`
+- Stopped then started
