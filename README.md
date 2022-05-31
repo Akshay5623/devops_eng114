@@ -54,7 +54,7 @@ Companies need a development environment as it is great for streamlined workflow
 - Create a file `touch filename` or `nano filename`
 - Move test.txt from current location to devops folder `mv - test.txt devops`
 - Copy paste `cp path_of_data path_of_destination`
-> May need to use sudo at the beginning of the command if permission is denied.
+> May need to use sudo at the beginning of the command if permission is denied. This allows admin access which may be needed to run commands
 
 ## File permissions
 - READ `r` WRITE `w` EXECUTE `x`
@@ -88,10 +88,94 @@ chmod 640 file1 (user = rw, group = r)
 
 ## Bash scripting
 - Create a file called provision.sh within the VM
-- Change permission of this file `chmod +x provision.sh`
+- Change permission of this file `sudo chmod +x provision.sh` - This makes the file executable
 - First line MUST BE starting with `#!/bin/bash`
-- Update and upgrade ubuntu
+- Update ubuntu
+- Upgrade ubuntu 
 - Install nginx
 - Start nginx
 - `enable nginx`
 - Stopped then started
+- To run the script `sudo./provision.sh`
+> If the script file is elsewhere you would need to provide the absolute path.
+> This is known as provisioning
+
+### On local machine
+
+Create a file called file.sh which has the same contents as the provision.sh file on the VM
+
+In Vagrantfile
+- To add an external script to run on vagrant up:
+
+  `config.vm.provision "file", source: "./file.sh", destination: "$HOME/"`
+> This will essentially transfer the file.sh file from the local machine to the vm. More info avaliable in the Vagrant website for documentation
+
+> This command can be commented outfor task 2
+
+- Change permissions of file to executable:
+
+  `config.vm.provision "shell",
+    inline: "sudo chmod +x file.sh && sudo ./file.sh", run: "always"`
+> This will change the file.sh permission to make it executable.
+
+These 2 steps should allow you to access the nginx page without having to ssh into the vm
+
+### Installing nodejs v6 and npm
+
+- Install Nodejs v6
+
+    `curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -`
+
+    `sudo apt-get install nodejs -y`
+
+- Install pm2
+
+    `sudo npm install pm2 -g`
+
+- Install python software properties
+
+    `sudo apt-get install python-software-properties`
+
+### Copy app from localhost to the VM
+
+- copy the app to the VM. In the vagrant file put 
+
+`config.vm.synced_folder ".", "/home/vagrant/app"`
+
+vagrant reload to apply the changes
+
+## Task 2
+
+commands to add to the bottom of provision.sh or file.sh based on what you name the file. Commands must be in order
+
+- Install Nodejs v6
+
+    `curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -`
+
+    `sudo apt-get install nodejs -y`
+
+- Install pm2
+    
+    `sudo npm install pm2 -g`
+
+- Install python software properties
+    
+    `sudo apt-get install python-software-properties -y`
+
+- Change directory into the folder which contains the package.json file
+
+    `cd app/app/app/app`
+    > Will be different dependant on file structure.
+
+- Install npm
+    
+    `npm install -d`
+
+- Start npm
+
+    `npm start -d`
+
+Once these commands have been run on vagrant up, you should be able to navigate to port 3000 and see the relative page dependant on the app.
+
+
+
