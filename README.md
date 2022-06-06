@@ -177,5 +177,48 @@ commands to add to the bottom of provision.sh or file.sh based on what you name 
 
 Once these commands have been run on vagrant up, you should be able to navigate to port 3000 and see the relative page dependant on the app.
 
+## Creating variables in linux
 
+### Basic variable commands
+- `VARIABLE_NAME=Variable_Value` - This will set a vraiable e.g MY_NAME=Akshay
+- `echo $MY_NAME` - This will show the variable name in the temrinal
+- `env` - This shows all the environment variables avaliable to us
+- `export MY_NAME=Akshay` This will set the environment variable in the session  
 
+### How to make an environment variable persistent in Linux Ubuntu
+
+- `sudo nano ~/.bashrc`
+- `export [VARIABLE_NAME]=[variable_value]` - e.g. EXAMPLE="This is an example" -  at the bottom of the file
+- `CTRL + X then Y`  to save the file
+- `source ~/.bashrc` - so we dont have to restart the virtual machine
+- `printenv VARIABLE_NAME` e.g printenv EXAMPLE - This is to see if the variable has been stored properly.
+
+How to unset a variable in Linux Ubuntu
+- `unset [VARIABLE_NAME]`
+
+### Reverse proxy with nginx (Manual)
+- When the app is up and running cd to the app folder on the VM and cd into `/etc/nginx/sites-available` and run `ls` - This should show a default file
+
+- `sudo nano /etc/nginx/sites-available/default` to enter the file
+
+- In the server block there should be a location block (the one which is not commented out).
+
+- Replace the contents of that location block with the following code (Dont remove the { })
+-       proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+
+- REPLACE THE PORT NUMBER ON THE FIRST LINE WITH THE PORT NUMBER OF THE APP YOU ARE RUNNING e.g 3000 instead of 8080 (The app I am running is on port 3000)
+
+- Save the file
+
+- Run the command `sudo nginx -t` - To ensure there are no syntax errors
+
+- `sudo systemctl restart nginx` - restart nginx and hopefully set up reverse proxy
+
+- Go to browser and type in ip and port number to se if app is working, then type in the ip without the port number and the app should appear.
+
+More information on setting up reverse proxy for the app we are using (Step 5 onwards for reverse proxy): https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04
