@@ -27,11 +27,17 @@ sudo npm install pm2 -g
 # Install python software
 sudo apt-get install python-software-properties -y
 
+# Copy over default and run it
+sudo rm -rf /etc/nginx/sites-available/default
+sudo cp default /etc/nginx/sites-available/
+sudo systemctl restart nginx
+sudo systemctl enable nginx
+
 # Redirect into correct folder
-cd app/app/app/
+# cd app/app/app/
 
 # Install npm
-npm install -d
+# npm install -d
 
 # Start npm
-npm start -d
+# npm start -d

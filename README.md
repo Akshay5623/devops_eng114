@@ -222,3 +222,110 @@ How to unset a variable in Linux Ubuntu
 - Go to browser and type in ip and port number to se if app is working, then type in the ip without the port number and the app should appear.
 
 More information on setting up reverse proxy for the app we are using (Step 5 onwards for reverse proxy): https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-16-04
+
+### How to check process is running in linux
+- `top` or `ps aux`- to see processes running 
+- `sudo kill process-id` - kills the process specified
+- How to use piping `|` - this helps to sort out or short list process
+- How to use `head` and `tail` - to look at file from top or bottom with piping
+
+## Create another vm for MongoDB and configure it.
+- Create another VM for our database which is MongoDB
+- Ubuntu 16.04 - use the same box as app
+- Configure and install MongoDB with correct version
+- Allow the required access, allow ip of app machine to connect to our database
+- in app machine by creatnig ENV variable called DB_HOST
+- cd /etc
+- sudo nano mongod.conf - by default it allows access to 127.0.0.1 with port 27017
+- edit mongod.conf to allow app ip or for ease of use to allow all but thats not best practice for production env
+- 0.0.0.0
+- restart and enable mongodb
+
+## Common errors
+- DB_HOST not found - this needs to be created in the app machine not the db machine
+- when ssh'ing into machine when there are more than one. To get into the right VM use: `vagrant ssh machinename`
+
+- edit the default file and insert the code to redirect the traffic
+- delete the file and replace with pre configured data
+- sudo rm -rf default
+- cp or ln default from the local host to the default location of proxy file
+- test it sudo nginx -t
+- restart and enable
+
+### troubleshooting with vagrant
+
+- `ls -a` in local host, should be a .vagrant folder, if there are errors and you cant end up fixing it, delete the .vagrant file
+- option 2 open virtual box, right click on 3 lines, close, power off, right click again, remove
+
+## Setting up a second virtual machine for mongodb
+go to vagrant file and add a second machine like below, first machine is the app machine we had already, the second one is the new db machine
+
+-   Vagrant.configure("2") do |config|
+  
+        config.vm.define "app" do |app|
+            app.vm.box = "ubuntu/xenial64"
+            
+            app.vm.network "private_network", ip: "192.168.10.100"
+            app.vm.provision "file", source: "./file.sh", destination: "$HOME/"
+            app.vm.provision "file", source: "./default", destination: "$HOME/" 
+            app.vm.provision "shell",
+            path: "./file.sh", run: "always"
+            app.vm.synced_folder "./app", "/home/vagrant/app"
+
+  end
+
+-         config.vm.define "db" do |db|
+            db.vm.box = "ubuntu/xenial64"
+            db.vm.network "private_network", ip: "192.168.10.150"
+
+  end
+end
+
+
+### Connecting mongodb machine to app machine 
+once both machines running ssh into app machine
+- `npm start`
+- come out of app ctrl + c
+- exit
+- `vagrant ssh db`
+
+### Setting up mongodb
+- `sudo apt-get update && apt-get upgrade -y`
+
+- `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA312927`
+
+- `echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list`
+
+- `sudo apt-get update -y`
+
+- `sudo apt-get update -y`
+
+- `sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20`
+
+- `sudo systemctl restart mongod`
+
+- `sudo systemctl enable mongod` 
+
+- `sudo systemctl status mongod`
+
+### Configure mongodb
+- `cd /etc`
+- `sudo nano mongod.conf`
+- on network interface change bindip to `0.0.0.0` - only use this for a dev environment
+- save the nano file
+- `sudo system restart mongod`
+- `sudo system status mongod`
+- `cat mongod.conf`
+
+GO BACK TO THE APP VM AND SSH IN
+- `sudo echo "export DB_HOST=mongodb://192.168.10.150:27017/posts" >> ~/.bashrc`
+- `source ~/.bashrc`
+- `printenv DB_HOST`
+- cd to the right app folder
+- `sudo npm start` 
+
+### If you cant see the data on the browser 
+- `ctrl c out of the npm command`
+- `node seeds/seed.js` - database cleared
+looks at something with the database
+- `npm start`

@@ -3,4 +3,5 @@ Vagrantfile
 ubuntu-xenial-16.04-cloudimg-console.log
 app.zip
 app
-
+default
+file.sh
