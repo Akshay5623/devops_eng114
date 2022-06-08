@@ -369,7 +369,7 @@ this is a command for node app
 Amazon Web Services (AWS) is a subsidiary of Amazon that provides on-demand cloud computing platforms to individuals, companies and governments, on a paid subscription basis. The technology allows subscribers to have at their disposal a virtual cluster of computers, available all the time, through the Internet.
 
 This image shows the global infrastructure of AWS.
-![](images/AWS Global infrastructure.png)
+![](images/AWS_Global_infrastructure.png)
 
 For more information on the global infrastructure image including amount of zones and locations: https://aws.amazon.com/about-aws/global-infrastructure/?pg=WIAWS
 
