@@ -18,6 +18,10 @@ sudo systemctl enable nginx
 # Download Nodejs v6
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 
+# Create and set the DB_HOST environment variable
+# sudo echo "export DB_HOST=mongodb://192.168.10.150:27017/posts" >> /etc/bash.bashrc
+# source ~/.bashrc
+
 # Install Nodejs v6
 sudo apt-get install nodejs -y
 
@@ -34,10 +38,10 @@ sudo systemctl restart nginx
 sudo systemctl enable nginx
 
 # Redirect into correct folder
-# cd app/app/app/
+cd app/app/app/
 
 # Install npm
-# npm install -d
+npm install -d
 
 # Start npm
 # npm start -d

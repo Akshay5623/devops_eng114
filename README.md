@@ -313,8 +313,8 @@ once both machines running ssh into app machine
 - `sudo nano mongod.conf`
 - on network interface change bindip to `0.0.0.0` - only use this for a dev environment
 - save the nano file
-- `sudo system restart mongod`
-- `sudo system status mongod`
+- `sudo systemctl restart mongod`
+- `sudo systemctl status mongod`
 - `cat mongod.conf`
 
 GO BACK TO THE APP VM AND SSH IN
@@ -323,9 +323,71 @@ GO BACK TO THE APP VM AND SSH IN
 - `printenv DB_HOST`
 - cd to the right app folder
 - `sudo npm start` 
+- - go to http://192.168.10.100:3000/posts and you should see the database info
 
 ### If you cant see the data on the browser 
 - `ctrl c out of the npm command`
 - `node seeds/seed.js` - database cleared
 looks at something with the database
 - `npm start`
+- go to http://192.168.10.100:3000/posts and you should see the database info
+
+NOW NEED TO AUTOMATE THIS
+
+`nohup node app.js > /dev/null 2>&1 &` 
+this is a command for node app
+
+# What is cloud computing?
+- Cloud computing is the delivery of computing services including servers, storage, databases, networking, software, analytics and intelligence over the Internet (the cloud) to offer faster innovation, flexible resources and economies of scale.
+
+### Benefits of cloud computing
+- Cost effective
+- More security
+- High availability
+- Better performance
+- Scalable
+- Faster than local machines
+- Helps release software faster. More beneficial for the business
+- Faster innovation
+- More flexible resources
+
+### Why should we use cloud computing?
+- If we have a large app to deploy, its easier to deploy via the cloud rather than a local machine.
+- Good disaster recovery with availabily zones.
+- Different cloud models (Public, Private, Hybrid) allow for a more tailored approach.
+
+### Monolithic Architecture
+- Everything is based in one box
+
+- Simple but has limitations and complexity
+- Heavy apps can slow down the start up time
+- Each update results into redeploying the full stack app
+- Challenging to scale up on demand
+- Fruitful for simple and lightweight apps
+
+# AWS
+Amazon Web Services (AWS) is a subsidiary of Amazon that provides on-demand cloud computing platforms to individuals, companies and governments, on a paid subscription basis. The technology allows subscribers to have at their disposal a virtual cluster of computers, available all the time, through the Internet.
+
+This image shows the global infrastructure of AWS.
+![](images/AWS Global infrastructure.png)
+
+For more information on the global infrastructure image including amount of zones and locations: https://aws.amazon.com/about-aws/global-infrastructure/?pg=WIAWS
+
+### After logging into AWS
+- When you log into AWS change to Ireland in the top right of the screen.
+
+- Good naming convention is groupname_yourname_nameoftask e.g. eng114_akshay_app
+
+### When looking at instances
+
+- Name: Name of the machine
+
+- Instance ID: ID of the machine
+
+- Instance status: Shows whether the machine is running, stopped or terminated.
+
+- Instance type: Type of machine being used (size, disks etc)
+
+- Availability zone: Zone the machine is located in.
+
+- Security group name: Shows what security group the machine belongs to

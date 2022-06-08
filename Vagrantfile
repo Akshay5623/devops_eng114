@@ -44,3 +44,33 @@ Vagrant.configure("2") do |config|
   end
 end
 
+# New Vagrant file configuration
+
+#Vagrant.configure("2") do |config|
+#
+#	config.vm.define "db" do |db|
+#   db.vm.box = "ubuntu/xenial64"
+#   db.vm.network "private_network", ip: "192.168.10.150"
+#		#copy provision file over
+#		db.vm.provision "file", source: "./db_provision.sh", destination: "$HOME/"
+#		#copy over mongodb config
+#		db.vm.provision "file", source: "./mongod.conf", destination: "$HOME/"
+#		#gives the provison.sh file ablity to execute
+#		db.vm.provision "shell", inline: "sudo chmod +x db_provision.sh"
+#		#Runs the file
+#		db.vm.provision "shell", inline: "sudo ./db_provision.sh"
+#
+#
+#	end
+#
+#	config.vm.define "app" do |app|
+#   app.vm.box = "ubuntu/xenial64"
+#  	app.vm.network "private_network", ip: "192.168.10.100"
+# 	# app.vm.provision "file", source: "./file.sh", destination: "$HOME/"
+#   # app.vm.provision "file", source: "./default", destination: "$HOME/" 
+#   app.vm.provision "shell",
+#   path: "./file.sh", run: "always"
+#   app.vm.synced_folder "./app", "/home/vagrant/app"
+#	end
+#
+#end
