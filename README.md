@@ -335,7 +335,8 @@ looks at something with the database
 NOW NEED TO AUTOMATE THIS
 
 `nohup node app.js > /dev/null 2>&1 &` 
-this is a command for node app
+this is a command for node app maybe instead of npm start
+
 
 # What is cloud computing?
 - Cloud computing is the delivery of computing services including servers, storage, databases, networking, software, analytics and intelligence over the Internet (the cloud) to offer faster innovation, flexible resources and economies of scale.
@@ -391,3 +392,37 @@ For more information on the global infrastructure image including amount of zone
 - Availability zone: Zone the machine is located in.
 
 - Security group name: Shows what security group the machine belongs to
+
+
+## Get the node app from local host to the VM on AWS
+
+We can use scp to transfer files from local host to VM, the command is shown below
+ 
+`scp -i .ssh/<ssh_key_name>.pem -r path/of/local/file user@target_vm_address:target/path/`
+
+ I copied my default file over i copied the app to help with reverse proxy
+
+ Once file copying has been completed, go to the amazon instance and ssh into it. 
+
+### Run the following commands
+I ran these from the app folder, maybe able to run from root
+- `sudo apt update -y`
+- `sudo apt upgrade -y`
+- `sudo apt install nginx -y`
+- `sudo systemctl start nginx`
+- `sudo systemctl enable nginx`
+- `curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -`
+- `sudo apt install nodejs -y`
+- `sudo apt install npm`
+- `sudo apt install python-software-properties -y`
+
+go back to root on vm
+- `sudo cp default /etc/nginx/sites-available/`
+- `sudo systemctl restart nginx`
+- `sudo systemctl enable nginx`
+
+go back to right app folder on vm
+- `npm install -d`
+- `npm start`
+
+Navigate to your public IP from Amazon EC2 instance on your browser with :3000 to see if the app works and without :3000 to see if the reverse proxy works.
