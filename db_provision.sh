@@ -18,5 +18,6 @@
 # Copy over the new MongoDB config file and run it
 # sudo rm -rf /etc/mongod.conf
 # sudo cp mongod.conf /etc/mongod.conf
+
 # sudo systemctl restart mongod
 # sudo systemctl enable mongod

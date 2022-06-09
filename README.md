@@ -335,7 +335,7 @@ looks at something with the database
 NOW NEED TO AUTOMATE THIS
 
 `nohup node app.js > /dev/null 2>&1 &` 
-this is a command for node app maybe instead of npm start
+Run this command 
 
 
 # What is cloud computing?
@@ -398,9 +398,9 @@ For more information on the global infrastructure image including amount of zone
 
 We can use scp to transfer files from local host to VM, the command is shown below
  
-`scp -i .ssh/<ssh_key_name>.pem -r path/of/local/file user@target_vm_address:target/path/`
+`scp -i .ssh/<ssh_key_name>.pem -r path/of/local/file user@public_IPv4_DNS_of_incstance:target/path/`
 
- I copied my default file over i copied the app to help with reverse proxy
+ I copied my default file to help with reverse proxy
 
  Once file copying has been completed, go to the amazon instance and ssh into it. 
 
@@ -422,7 +422,130 @@ go back to root on vm
 - `sudo systemctl enable nginx`
 
 go back to right app folder on vm
-- `npm install -d`
+- `npm install -d` - May not be needed as npm has been installed earlier
 - `npm start`
 
 Navigate to your public IP from Amazon EC2 instance on your browser with :3000 to see if the app works and without :3000 to see if the reverse proxy works.
+
+### IF CONNECTION TIMED OUT ENSURE YOUR IP IS UPTO DATE ON AWS
+- select your instance
+- go down to security
+- and click on the link under security groups
+- edit inbound rules
+- change source to my IP
+- then copy command from connect to ssh into machine and try it in git bash
+
+### Task - for 2 tier architecture for the db as well as the app
+- Create new ubuntu 18.04 instance
+- Create a new security group for our db
+- Allow app to connect to the db
+- Allow local host to ssh into port 22
+- Allow port 27017 for mongodb
+- DB must not have public access
+- MongoDB configuration (Installing MongoDB on the machine) - the same script should run
+- connect to db using DB_HOST
+- DB_HOST=db-ip
+- make the changes to mongod.conf to allow app ip to connect to 27017 instead of 0.0.0.0 previously, this time it needs to be the ip of the app
+- restart and enable mongodb
+
+Once the machine has been created
+- ssh into the db machine
+- install mongo with the following commands
+- sudo apt-get update -y
+- sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA312927
+- echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+- sudo apt-get update -y
+- sudo apt-get upgrade -y
+- sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20
+- sudo systemctl restart mongod
+- sudo systemctl enable mongod
+
+After this cd into /etc on db machine
+- ls to see if mongod.conf is there
+- `sudo nano mongod.conf`
+- on network interface change bindip to `0.0.0.0` - only use this for a dev environment use the right ip in a working environment
+- `CTRL + X then Y then Enter` To save the nano file
+- `sudo systemctl restart mongod`
+- `sudo systemctl enable mongod`
+- `cat mongod.conf` to make sure it has been saved
+
+Go back to app VM and SSH into it
+- `sudo echo "export DB_HOST=mongodb://PUBLIC.IP.OF.DATABASE.INSTANCE:27017/posts" >> ~/.bashrc`
+- `source ~/.bashrc`
+- `printenv DB_HOST`
+- cd to the right app folder
+- `npm start` 
+- Can run `nohup node app.js > /dev/null 2>&1 &` instead of npm start this will essentially run npm start in a background process
+- Go to `http:/PUBLIC.IP.OF.APP.INSTANCE:3000/posts` and you should see the database info
+- Try the same without :3000 but keep /posts to see if reverse proxy is working
+- If you cant see the info ctrl c out of the app
+- `node seeds/seed.js` - To clear and seed the database
+- Run the app again and the text should appear
+
+### AMI's
+Amazon Machine Image
+
+- Its an image of a machine
+- Can save money as it creates a snapshot of the machine
+
+### To create an image
+- Go to instances
+- Select the instance you want to create an image of, go to actions, image and templates, create image
+- Enter the image name and description e.g eng114_akshay_app_image
+- Select create image
+
+### To launch an instance from AMI
+- Go to AMI's on the side panel
+- Select the image you want
+- Click launch instance from ami
+- Go through the setup steps but with security groups select the one you have already made corresponding to the previous instance e.g. eng114_akshay_app
+- Launch the instance
+- If the ssh command on AWS has root, change root to ubuntu when SSHing into the machine
+
+## Task 3 - relaunch app from image, re create database instance and make an image of database instance and connect new app machine to new db machine
+ - Relaunch app image following steps above
+ - Ssh into the app machine and dont do anything else there yet
+
+ - Remake the DB instance from scratch
+ - When completed, ssh into the db machine in a seperate terminal
+
+Run the following commands
+- `sudo apt-get update -y`
+- `sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA312927`
+- `echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list`
+- `sudo apt-get update -y`
+- `sudo apt-get upgrade -y`
+- `sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20`
+- `sudo systemctl restart mongod`
+- `sudo systemctl enable mongod`
+
+After this cd into /etc on DB machine
+- `ls` to see if mongod.conf is there
+- `sudo nano mongod.conf`
+- on network interface change bindip to `0.0.0.0` - only use this for a dev environment use the right ip in a working environment
+- `CTRL + X then Y then Enter` To save the nano file
+- `sudo systemctl restart mongod`
+- `sudo systemctl enable mongod`
+- `cat mongod.conf` to make sure it has been saved
+
+### Now create an AMI of the DB machine following the steps above
+
+### After that image has been created
+- Go to the ami security and change the source rule to the public ipv4 address of the app from ami db on the 27017 port and save the rule.
+
+- Connection may close when you create an AMI you just need to ssh back into the DB machine.
+
+- In the app machine set the environment variable: sudo echo "export DB_HOST=mongodb://PUBLIC.IP.OF.DATABASE.INSTANCE:27017/posts" >> ~/.bashrc
+
+- Source the env variable with source ~/.bashrc
+
+- printenv DB_HOST to make sure its there
+
+- Sudo npm start
+
+- Go to http:/PUBLIC.IP.OF.APP.INSTANCE:3000/posts and you should see the database info
+
+- Try the same without :3000 but keep /posts to see if reverse proxy is working.
+- if the text isnt loading, `CTRL C` out of the app
+- Run `node seeds/seed.js`
+- Re run the app with `npm start`
