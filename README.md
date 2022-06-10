@@ -531,7 +531,7 @@ After this cd into /etc on DB machine
 ### Now create an AMI of the DB machine following the steps above
 
 ### After that image has been created
-- Go to the ami security and change the source rule to the public ipv4 address of the app from ami db on the 27017 port and save the rule.
+- Go to the ami security and change the source rule to the public ipv4 address of the app from ami db/32 on the 27017 port and save the rule.
 
 - Connection may close when you create an AMI you just need to ssh back into the DB machine.
 
@@ -549,3 +549,16 @@ After this cd into /etc on DB machine
 - if the text isnt loading, `CTRL C` out of the app
 - Run `node seeds/seed.js`
 - Re run the app with `npm start`
+
+### When you start up both machines again after them being in a stopped state, you will need to change the 27017 port rule on the db instance to the new public ipv4 address generated on the app instance/32 e.g. 123.45.6.78/32. Then ssh into the machines and change the environment variable on the app machine to include the new ip generated on the database instance.
+
+- When copying the SSH command from AWS, if it says root, change root to ubuntu before entering the command!
+
+
+### Automation on AWS using EC2
+- Automating the process of setting up and configuring a product e.g. app, db, web app etc
+- Bootstrap the configuration of the product
+- should be able to see nginx page on launch without having to ssh into the machine through bootstrapping
+
+- Create a machine
+- on step 3 we can 
