@@ -561,4 +561,69 @@ After this cd into /etc on DB machine
 - should be able to see nginx page on launch without having to ssh into the machine through bootstrapping
 
 - Create a machine
-- on step 3 we can 
+- on step 3 we can add a script to launch on startup
+### Task 3
+- create a new ec2 instance
+- automate the process of confuiguring mongodb with user data script
+- connect the app with the db using DB_HOST
+
+TO CHANGE A LINE IN A FILE
+- sudo sed -i 's/search_string/replace_string/' filename
+- sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+
+AUTOMATE THE DB MACHINE FIRST
+- On step 3 at the bottom add this in the user data
+
+- #!/bin/bash
+- sudo apt-get update -y
+- sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv D68FA50FEA312927
+- echo "deb https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+- sudo apt-get update -y
+- sudo apt-get upgrade -y
+- sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20
+- sudo systemctl restart mongod
+- sudo systemctl enable mongod
+- sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+- sudo systemctl restart mongod
+- sudo systemctl enable mongod
+- sudo service mongod start
+
+
+TO AUTOMATE THE APP MACHINE ON LAUNCH WITH USER DATA
+
+#!/bin/bash
+- sudo apt update -y
+- sudo apt upgrade -y
+- sudo apt install nginx -y
+- sudo systemctl start nginx
+- sudo systemctl enable nginx
+- sudo curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+- sudo apt install nodejs -y
+- sudo apt install npm -y
+- npm install pm2 -g
+- sudo apt install python-software-properties -y
+- mkdir repo
+- cd repo
+- git clone https://github.com/Akshay5623/devops_eng114.git
+- cd devops_eng114
+- sudo mv default /etc/nginx/sites-available/default
+- sudo systemctl restart nginx
+- sudo echo "export DB_HOST=mongodb://34.246.223.101:27017/posts" >> /etc/bash.bashrc
+- source /etc/bash.bashrc
+
+MAY NEED TO CHANGE THE PORT NUMBER FOR THE ENV VARIABLE
+
+while machine is initialising change the port rule for 27017 on the db machine to allow the public ip of the app instance/32.
+
+
+
+when sshing into the app machine
+- cd ..
+- cd ..
+- ls
+- if repo is there cd into repo
+- ls to see if devops_eng114
+- cd app
+- cd app
+- cd app
+- npm start
