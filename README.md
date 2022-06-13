@@ -615,8 +615,6 @@ MAY NEED TO CHANGE THE PORT NUMBER FOR THE ENV VARIABLE
 
 while machine is initialising change the port rule for 27017 on the db machine to allow the public ip of the app instance/32.
 
-
-
 when sshing into the app machine
 - cd ..
 - cd ..
@@ -627,3 +625,39 @@ when sshing into the app machine
 - cd app
 - cd app
 - npm start
+
+## AWS S3
+Amazon S3 or Amazon Simple Storage Service is a service offered by Amazon Web Services that provides object storage through a web service interface. S3 is the only object storage service that allows you to block public access to all of your objects at the bucket.
+
+- You can put any type of data in this.
+- There is no data limit.
+- This is a global service which is highly available and scalable.
+
+### Storage classes:
+- Standard
+- Clacier class
+
+### Dependencies required
+- Python 3 or above
+- awscli
+- pip3
+- Update and upgrade
+- AWS access and secret key for data access
+
+
+Naming conventions with S3 does not accept any special characters, underscores wont work.
+
+- Make a bucket: `aws s3 mb s3://eng114-akshay-bucket` 
+
+- Copy file to bucket: `aws s3 cp test.txt s3://eng114-akshay-bucket/`
+
+- Copy file from bucket: `aws s3 cp s3://eng114-akshay-bucket/test.txt test.txt`
+
+- Delete file from bucket: `aws s3 rm s3://eng114-akshay-bucket/test.txt`
+
+- Delete bucket: `aws s3 rb s3://eng114-akshay-bucket`
+
+## Need to delete files in the bucket before the bucket can be deleted.
+
+
+
