@@ -4,5 +4,5 @@ app.zip
 node_modules/
 boto_task.py
 boto.py
-
+boto_setup.txt
 

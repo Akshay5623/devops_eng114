@@ -1,6 +1,6 @@
 import boto3
 
-# s3 = boto3.client('s3')
 s3 = boto3.resource('s3')
 
-s3.create_bucket(Bucket='eng114-akshay-bucket', CreateBucketConfiguration={'LocationConstraint': 'eu-west-1'})
+s3.create_bucket(Bucket='eng114-akshay-bucket', CreateBucketConfiguration={
+    'LocationConstraint': 'eu-west-1'})

@@ -625,6 +625,7 @@ when sshing into the app machine
 - cd app
 - cd app
 - npm start
+#
 
 ## AWS S3
 Amazon S3 or Amazon Simple Storage Service is a service offered by Amazon Web Services that provides object storage through a web service interface. S3 is the only object storage service that allows you to block public access to all of your objects at the bucket.
@@ -657,7 +658,149 @@ Naming conventions with S3 does not accept any special characters, underscores w
 
 - Delete bucket: `aws s3 rb s3://eng114-akshay-bucket`
 
-## Need to delete files in the bucket before the bucket can be deleted.
+### Need to delete files in the bucket before the bucket can be deleted.
+
+#
+
+## Monitoring and Alert Management
+
+Things to consider when thinking about monitoring.
+
+- What should we monitor?
+- When should we monitor?
+- Who should be responsible?
+- Who should be notified in case of failure?
+- What should be the next steps?
+- WHY SHOULD WE MONITOR?
+
+Pre requisite is that there should be something in an active state to monitor such as our node app in a running state.
+
+Services available. Monitoring does not depend on these 2 services.
+
+- Cloudwatch - to monitor AWS service
+- SNS (Simple Notification Service) - Notify of any alerts detected by Cloudwatch
+
+![](images/cloudwatch.png)
+
+Third service available
+- SQS (Simple Queue Service) - Creates a first come first serve queue 
+
+What aspects should we monitor?
+- Error Logs
+- Budgeting
+- Uptime - access time - response time (Latency)
+- Security breaches
+- System tests/health
+- Instance health
+- CPU utilisation
+
+### 4 Golden Signals
+- Latency - (Time taken to serve a request)
+
+Define a benchmark for “good” latency rates. Then, monitor the latency of successful requests against failed requests to keep track of health. Tracking latency across the entire system can help identify which services are not performing well and allows teams to detect incidents faster. The latency of errors can help improve the speed at which teams identify an incident – meaning they can dive into incident response faster.
+
+- Traffic - (The stress from demand on the system)
+
+How much stress is the system taking at a given time from users or transactions running through the service? Depending on the business, what you define as traffic could be vastly different from another organization. Is traffic measured as the number of people coming to the site or as the number of requests happening at a given time? By monitoring real-user interactions and traffic in the application or service, SRE teams can see exactly how customers experience the product while also seeing how the system holds up to changes in demand.
+
+- Errors -(Rate of requests that are failing) - 
+
+SRE teams need to monitor the rate of errors happening across the entire system but also at the individual service level. Whether those errors are based on manually defined logic or they’re explicit errors such as failed HTTP requests, SRE teams need to monitor them. It’s also important to define which errors are critical and which ones are less dangerous. This can help teams identify the true health of a service in the eyes of a customer and take rapid action to fix frequent errors.
+
+- Saturation
+(The overall capacity of the service)
+
+The saturation is a high-level overview of the utilization of the system. How much more capacity does the service have? When is the service maxed out? Because most systems begin to degrade before utilization hits 100%, SRE teams also need to determine a benchmark for a “healthy” percentage of utilization. What level of saturation ensures service performance and availability for customers? 
+
+Create SNS notifications on AWS
+
+- Create an alarm in Cloudwatch (for a specific instance click Actions on instance page)
+
+- Click on Monitor and Troubleshoot and click Manage cloudwatch alarms
+
+- Add conditions and assign to a topic (you can create a new one at this stage under Alarm notification)
+
+- Then in SNS click Subscriptions, then click Create subscription
+
+- Type the topic name you assigned to your alarm under Topic ARN
+
+- Under Protocol, select Email and type the Endpoint email address you want to use
+
+- Click Create subscription and confirm the subscription when AWS sends an email prompting you to
+
+- Now whenever the alarm conditions are met, that email address will receive a notification
+
+More information on alarms for cpu utilisation: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/US_AlarmAtThresholdEC2.html
+
+### Autoscaling and Load Balancing
+
+- Autoscaling automatically adjusts the amount of computational resources based on the server load
 
 
 
+- Load balancing distributes traffic between ec2 instances so that no one instance becomes overwhelmed.
+
+Below is a visual representation of Load Balancing and Auto Scaling
+
+![](images/load_balancer.jpg)
+
+
+
+
+- Have more than one instace in more than one availability zones incase of outages.
+- Can divert back to the original when it has been fixed
+- Do this to be more flexible and more cost effective.
+
+### Need to know this to autoscale and load balance
+- Launch template
+- Type of load balancer - Application Load Balancer (ALB) (This is based on the application you are running.) You need a target group/listener group HTTP
+- Create application load balancer and attach required dependencies
+- Create Auto scaling group - Attach this to the ALB
+
+Terminate the autoscaling group at the end of the day.
+autoscaling group, check your one, delete autoscaling group.
+
+
+Create a Launch template
+- Click on launch templates on the side
+- Create launch template
+- Name it e.g. eng114-akshay-asg-lt
+- Tick auto scaling guidance
+- Template tags - Name - eng114-akshay-asg-lt
+- App and os images, browse more amis, free tier, ubuntu 18.04
+- Instance type t2 micro
+- Key pair name - eng114
+- Select existing security group
+- Select your app security group
+- Advanced details - user data script below
+-       #!/bin/bash
+        sudo apt-get update -y
+        sudo apt-get upgrade -y
+        sudo apt-get install nginx -y
+        sudo systemctl restart nginx
+        sudo systemctl enable nginx
+ 
+Auto scaling group
+- Auto scaling groups
+- Create auto scaling group
+- Group name - eng114-akshay-asg-app
+- Launch template - select your launch template
+- Availability zones - default 1a, default 1b, default 1c next
+- Attach a new load balancer
+- Application load balancer
+- lb name - eng114-akshay-asg-app-alb
+- Internet facing
+- Listeners and routing - create a target group
+- New target group name - eng114-akshay-asg-app-alb-tg
+- Next
+- Auto scaling policy desired 2, min 2, max 3
+- Target tracking scaling policy
+- Cpu utilisation 20
+- Next
+- Next
+- Next
+- Create auto scaling group
+
+20% Alarm (Need to test) - cloudwatch, create alarm, select metric, ec2, by autoscaling group, select your one with CPUUtilisation and proceed as before.
+
+To retrieve your DNS Link - Go to load balancers, click your load balancer and copy the DNS link
