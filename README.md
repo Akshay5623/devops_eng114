@@ -848,3 +848,88 @@ https://docs.aws.amazon.com/vpc/latest/userguide/vpc-subnets-commands-example.ht
 
 What is a NACL?
 - A network access control list (NACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up NACLs with rules similar to your security groups in order to add an additional layer of security to your VPC.
+
+NACL work on a subnet level
+Security groups work on an instance level.
+
+How to create a VPC
+
+1) Create a VPC in eu-west-1 Ireland
+-       Go to vpc on aws
+        Create vpc
+        Create vpc only
+        Name it eng114-akshay-test-app-db
+        In IPv4 CIDR enter 10.0.0.0/16
+        Click on create a VPC
+2) Create internet gateway
+2.1) Attach the internet gateway with your VPC
+-       Click on internet gateways on the side
+        Create internet gateway
+        Name it eng114-akshay-IG
+        Click create internet gateway
+        Click on actions, attach to a vpc
+        Enter YOUR OWN VPC
+        Click on attach internet gateway
+3) Create a subnet(s) - associate subnet with your VPC
+-       Click on subnets on the side panel
+        Create subnet
+        Select YOUR OWN VPC
+        In subnet settings - subnet name - eng114-akshay-subnet-public (put private for your private subnet)
+        No preference for availability zone
+        In IPv4 CIDR block put 10.0.2.0/24
+        Check name and tag
+        Click on create subnet
+4) Create a route table within your VPC
+-       Click on Route tables on side panel
+        Create route table
+        Name it eng114-akshay-RT-public-sn (private instead of public for private subnet)
+        Select YOUR OWN VPC
+        Check name and tag
+        Click create route table
+4.1) Edit route table to add rules to connect to internet gateway
+-       On route table screen after clicking create route table.
+        Click on edit routes in the bottom half of the page
+        Click add route
+        Desination: 0.0.0.0/0      Target: internet gateway
+        Click on save changes
+
+        On same page after clicking save changes, click on subnet associations on bottom half of page, click on edit subnet associations on subnets without explicit associations
+        Select the box on the available subnet
+        Save associations
+
+To test it
+-       Create a new instance
+        Same as before
+        ON STEP 3 for network select your own VPC
+        Select your own subnet
+        Enable auto assign public ip
+        Enter any script you want on start up
+        Step 5 - Name - eng114-akshay-new-vpc
+        Step 6 create a new security group, add relevant ones you need for app or db
+        Launch and select the eng114 key
+        Wait for it to initialise and test the public ip of app instance to see if it works.
+
+VPC image
+
+![](images/VPC-self-made-image.png)
+
+(Image needs to be worked on)
+
+For the task
+- create a private subnet 10.0.13.0/24
+- add route to route table
+- launch app instance in the public subnet
+- launch db instance in private subnet. DO NOT ENABLE THE PUBLIC IP ON SETUP
+- change rule 27017 on db instance to the PRIVATE IP of the app instance
+- for the environment variable change the IP to the PRIVATE IP of the database instance
+
+
+
+
+
+
+
+
+
+
+
