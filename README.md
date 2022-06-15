@@ -843,5 +843,8 @@ What is a Subnet?
 What is a CIDR Block?
 - Classless inter-domain routing (CIDR) is a set of Internet protocol (IP) standards that is used to create unique identifiers for networks and individual devices. While creating VPC in AWS, the second step is to provide the IP CIDR block i.e the range of IP addresses to be allocated to this VPC.
 
+How to create a CIDR Block
+https://docs.aws.amazon.com/vpc/latest/userguide/vpc-subnets-commands-example.html
+
 What is a NACL?
-- A network access control list (NACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC.
+- A network access control list (NACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up NACLs with rules similar to your security groups in order to add an additional layer of security to your VPC.
