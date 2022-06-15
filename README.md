@@ -736,8 +736,6 @@ More information on alarms for cpu utilisation: https://docs.aws.amazon.com/Amaz
 
 - Autoscaling automatically adjusts the amount of computational resources based on the server load
 
-
-
 - Load balancing distributes traffic between ec2 instances so that no one instance becomes overwhelmed.
 
 Below is a visual representation of Load Balancing and Auto Scaling
@@ -767,12 +765,13 @@ Create a Launch template
 - Name it e.g. eng114-akshay-asg-lt
 - Tick auto scaling guidance
 - Template tags - Name - eng114-akshay-asg-lt
-- App and os images, browse more amis, free tier, ubuntu 18.04
+- App and os images, browse more amis, free tier, ubuntu 18.04 (maybe an ami would work)
 - Instance type t2 micro
 - Key pair name - eng114
 - Select existing security group
 - Select your app security group
-- Advanced details - user data script below
+- Advanced details - user data script below for nginx, could add a different script dependant on what youre runnning such as the node app
+
 -       #!/bin/bash
         sudo apt-get update -y
         sudo apt-get upgrade -y
@@ -780,7 +779,7 @@ Create a Launch template
         sudo systemctl restart nginx
         sudo systemctl enable nginx
  
-Auto scaling group
+Auto scaling group creation
 - Auto scaling groups
 - Create auto scaling group
 - Group name - eng114-akshay-asg-app
@@ -801,6 +800,48 @@ Auto scaling group
 - Next
 - Create auto scaling group
 
+### Setting up alarms for Auto Scaling Groups
+- Go to CloudWatch service
+
+- Click Create alarm
+
+- Click Select metric
+
+- Under Metrics click Auto Scaling
+
+- Click Group Metrics
+
+- Select your metric and fill in your conditions
+
+- Click Create new topic and enter topic name and email endpoint
+
 20% Alarm (Need to test) - cloudwatch, create alarm, select metric, ec2, by autoscaling group, select your one with CPUUtilisation and proceed as before.
 
 To retrieve your DNS Link - Go to load balancers, click your load balancer and copy the DNS link
+
+#
+
+## AWS VPC
+
+![](images/AWS-VPC-Components.webp)
+
+What is a VPC?
+- A virtual private cloud (VPC) is a secure, isolated private cloud hosted within a public cloud. VPC customers can run code, store data, host websites, and do anything else they could do in an ordinary private cloud, but the private cloud is hosted remotely by a public cloud provider. (Not all private clouds are hosted in this fashion.) VPCs combine the scalability and convenience of public cloud computing with the data isolation of private cloud computing.
+
+Benfits of a VPC
+- Flexible business growth
+- Satisfied customers
+- Reduced risk across the entire data lifecycle
+- More resources to channel toward business innovation
+
+What is an Internet Gateway?
+- An Internet gateway is a network "node" that connects two different networks that use different protocols (rules) for communicating. In the most basic terms, an Internet gateway is where data stops on its way to or from other networks. Thanks to gateways, we can communicate and send data back and forth with each other.
+
+What is a Subnet?
+- A subnet is a range of IP addresses within a network that are reserved so that they're not available to everyone within the network, essentially dividing part of the network for private use. In a VPC these are private IP addresses that are not accessible via the public Internet, unlike typical IP addresses, which are publicly visible.
+
+What is a CIDR Block?
+- Classless inter-domain routing (CIDR) is a set of Internet protocol (IP) standards that is used to create unique identifiers for networks and individual devices. While creating VPC in AWS, the second step is to provide the IP CIDR block i.e the range of IP addresses to be allocated to this VPC.
+
+What is a NACL?
+- A network access control list (NACL) is an optional layer of security for your VPC that acts as a firewall for controlling traffic in and out of one or more subnets. You might set up network ACLs with rules similar to your security groups in order to add an additional layer of security to your VPC.
