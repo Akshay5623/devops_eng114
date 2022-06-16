@@ -984,56 +984,67 @@ Before deciding whether to implement a CI/CD pipeline you should undertake a cos
 How to create SSH for GitHub account
 https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
 
-If you get permission denied go back to .ssh folder and run the command
-`$ eval "$(ssh-agent -s)"`
-then run
-`ssh-add ~/.ssh/114`
-
 ## First part to set up Jenkins
 
-- Need to generate SSH key pair on the local host in the .ssh folder
+### Need to generate SSH key pair on the local host in the .ssh folder
 
-- cd into .ssh folder
+- cd into .ssh folder on your terminal
 
-- ssh-keygen -t rsa -b 4096 -C "your email you used for github"
+- Run the following command
+- `ssh-keygen -t rsa -b 4096 -C "your email you used for github"`
 
-- call file whatever you want, in this case 114
+- When prompted, name the file in the way you want, in this case 114
 
-- keep pressing enter till you see the keys randomart image
+- Keep pressing enter until you see the keys randomart image
 
-- cat 111.pub - copy the contents
+- To show the public key
+- `cat 111.pub` - copy the contents that appear.
 
-- Need to copy the 114.pub key to our GitHub
+### Need to copy the 114.pub key to our GitHub
 
-- go to github, go to settings, ssh and gpg keys, add new ssh key, call it what you want, in this case 114 and copy the key into the box, save key
+- Log into your github
+- Go to settings in the top right of the page
+- Go to SSH and GPG keys
+- Add new SSH key
+- Name the key, in this case 114
+- Copy the key into the box
+- Save key
 
-- Test the SSH connection by pushing something to GitHub
+### Test the SSH connection by pushing something to GitHub
 
 - cd out of ssh
 
-- make new folder
+- Make new folder
 
-- git clone <ssh clone link of your repo on github without the <> >
+- git clone the repo with the SSH link
 
+- If you get permission denied go back to .ssh folder and run the following command
+- `$ eval "$(ssh-agent -s)"`
+- Then run the following command
+- `ssh-add ~/.ssh/114`
+- Try to run the git clone command again
 
+if that works and you have a README file make a change using `nano README.md`
+- save the file
+- git add .
 
-If you get permission denied go back to .ssh folder and run the command
-`$ eval "$(ssh-agent -s)"`
-then run
-`ssh-add ~/.ssh/114`
-Try to run the git clone command again
+- git commmit -m "testing ssh"
 
-if that works and you have a readme, make a change using nano README.md
+- git push -u origin main
 
-git add .
+### For SSH keys between Jenkins and GitHub
 
-git commmit -m "testing ssh"
+- Generate a new key pair using the steps above, name it akshay-jenkins
+- Copy the public key
+- Go to the GitHub repo which contains the app
+- Go to settings (next to insights not the top corner)
+- Go to deploy keys
+- Name it yourname-jenkins
+- Copy the key into the box
+- Check the allow write access if you want
+- Save the key
 
-git push -u origin main
-
-
-
-
+![](images/Jenkins-own-diagram.png)
 
 
 
