@@ -917,11 +917,61 @@ VPC image
 
 For the task
 - create a private subnet 10.0.13.0/24
-- add route to route table
+- (add that subnet to the already created route table.)
 - launch app instance in the public subnet
 - launch db instance in private subnet. DO NOT ENABLE THE PUBLIC IP ON SETUP
 - change rule 27017 on db instance to the PRIVATE IP of the app instance
 - for the environment variable change the IP to the PRIVATE IP of the database instance
+
+#
+
+# CI/CD with Jenkins
+
+### What is CI/CD?
+Continious Integration(CI) and Continious Deployment (CD) is considered as the backbone of DevOps practices and automation, It plays vital, challenging and exciting role in DevOps culture, growing numbers of companies releasing software in minutes with the adoption of CICD practices.
+
+### Use cases of CI/CD
+Approximately 2400 companies reportedly use CICD pipelines in their tech stack, including Facebook, Netflix, and Instacart, predominantly to gain the benefits of Faster software builds, customer satisfaction by deploying the app in time, Small code changes make fault isolation simpler and quicker, are the few advantages.
+
+### What is CI?
+Continuous Integration (CI): Developers merge/commit code to main branch multiple times a day and the fully automated build and test process which gives feedback within few minutes. By doing so, you avoid the integration problems that usually happens when people wait for release day to merge their changes into the release branch.
+
+### What is CD?
+Continuous Delivery (CD) is an extension of continuous integration to make sure that you can release new changes to your customers quickly in a sustainable way. This means that on top of having automated your testing, you also have automated your release process and you can deploy your application at any point of time by clicking on a button. In CD the deployment is completed manually.
+
+### What is CDE?
+Continuous Deployment (CDE) goes one step further than CD, with this practice, every change that passes all stages of your production pipeline is released to your customers, there is no human intervention, and only a failed test will prevent a new change to be deployed to production
+
+### What is Jenkins?
+Jenkins is a self-contained, open source automation server that can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software.
+
+Jenkins can be installed through native system packages, Docker, or even run standalone by any machine with a Java Runtime Environment (JRE) installed.
+
+### Comparing different CI/CD Tools
+Below is an image that compares the different CI/CD Tools available
+
+![](images/Different-CI-CD-Tools.png)
+
+Image from https://medium.com/@ahshahkhan/devops-culture-and-cicd-3761cfc62450
+
+
+### Why use Jenkins?
+- Jenkins is open source compared to its competitors
+- Jenkins has a great range of plugins available
+- Jenkins supports building, deploying, and automating for software development projects.
+- Easy installation
+- Simple and user-friendly interface
+- Extensible with huge community-contributed plugin resource 
+- Easy environment configuration in user interface
+- Supports distributed builds with its architecture.
+
+The image below shows the pipeline that Jenkins can run, it covers everything from deployment to production in an automated manner.
+
+![](images/Importance-of-Jenkins.png)
+
+Image from https://medium.com/@ahshahkhan/devops-culture-and-cicd-3761cfc62450
+
+
 
 
 
