@@ -989,6 +989,47 @@ If you get permission denied go back to .ssh folder and run the command
 then run
 `ssh-add ~/.ssh/114`
 
+## First part to set up Jenkins
+
+- Need to generate SSH key pair on the local host in the .ssh folder
+
+- cd into .ssh folder
+
+- ssh-keygen -t rsa -b 4096 -C "your email you used for github"
+
+- call file whatever you want, in this case 114
+
+- keep pressing enter till you see the keys randomart image
+
+- cat 111.pub - copy the contents
+
+- Need to copy the 114.pub key to our GitHub
+
+- go to github, go to settings, ssh and gpg keys, add new ssh key, call it what you want, in this case 114 and copy the key into the box, save key
+
+- Test the SSH connection by pushing something to GitHub
+
+- cd out of ssh
+
+- make new folder
+
+- git clone <ssh clone link of your repo on github without the <> >
+
+
+
+If you get permission denied go back to .ssh folder and run the command
+`$ eval "$(ssh-agent -s)"`
+then run
+`ssh-add ~/.ssh/114`
+Try to run the git clone command again
+
+if that works and you have a readme, make a change using nano README.md
+
+git add .
+
+git commmit -m "testing ssh"
+
+git push -u origin main
 
 
 
