@@ -943,7 +943,7 @@ Continuous Delivery (CD) is an extension of continuous integration to make sure 
 Continuous Deployment (CDE) goes one step further than CD, with this practice, every change that passes all stages of your production pipeline is released to your customers, there is no human intervention, and only a failed test will prevent a new change to be deployed to production
 
 ### What is Jenkins?
-Jenkins is a self-contained, open source automation server that can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software.
+Jenkins is a self-contained, open source automation server that can be used to automate all sorts of tasks related to setting up, building, testing, and delivering or deploying software.
 
 Jenkins can be installed through native system packages, Docker, or even run standalone by any machine with a Java Runtime Environment (JRE) installed.
 
@@ -971,6 +971,23 @@ The image below shows the pipeline that Jenkins can run, it covers everything fr
 
 Image from https://medium.com/@ahshahkhan/devops-culture-and-cicd-3761cfc62450
 
+Before deciding whether to implement a CI/CD pipeline you should undertake a cost benefit analysis. 
+
+## First part to set up Jenkins
+
+- Need to generate SSH key pair on the local host in the .ssh folder
+
+- Need to copy the 114.pub key to our GitHub
+
+- Test the SSH connection by pushing something to GitHub
+
+How to create SSH for GitHub account
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
+
+If you get permission denied go back to .ssh folder and run the command
+`$ eval "$(ssh-agent -s)"`
+then run
+`ssh-add ~/.ssh/114`
 
 
 
