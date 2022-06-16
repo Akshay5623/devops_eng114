@@ -1,6 +1,6 @@
 # What is DevOps
 DevOps cultural approach to software development project structure with a particular philosophy designed to achieve the following things:
-
+sdsdsd
 - Increased collaboration
 - Reduction in silos
 - Shared responsibility
@@ -69,7 +69,7 @@ Companies need a development environment as it is great for streamlined workflow
 - 4 = read 
 - 2 = write 
 - 1 = execute 
-
+- ssh test
 • Add numbers of permissions you wish to grant. 
 
 - Sum of these is what you provide. 
