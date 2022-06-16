@@ -993,12 +993,12 @@ https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a
 - Run the following command
 - `ssh-keygen -t rsa -b 4096 -C "your email you used for github"`
 
-- When prompted, name the file in the way you want, in this case 114
+- When prompted, name the file in the way you want
 
 - Keep pressing enter until you see the keys randomart image
 
 - To show the public key
-- `cat 111.pub` - copy the contents that appear.
+- `cat nameyougave.pub` - copy the contents that appear.
 
 ### Need to copy the 114.pub key to our GitHub
 
@@ -1006,7 +1006,7 @@ https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a
 - Go to settings in the top right of the page
 - Go to SSH and GPG keys
 - Add new SSH key
-- Name the key, in this case 114
+- Name the key
 - Copy the key into the box
 - Save key
 
@@ -1034,12 +1034,12 @@ if that works and you have a README file make a change using `nano README.md`
 
 ### For SSH keys between Jenkins and GitHub
 
-- Generate a new key pair using the steps above, name it akshay-jenkins
+- Generate a new key pair using the steps above, name it `yourname-jenkins`
 - Copy the public key
 - Go to the GitHub repo which contains the app
 - Go to settings (next to insights not the top corner)
 - Go to deploy keys
-- Name it yourname-jenkins
+- Name it `yourname-jenkins`
 - Copy the key into the box
 - Check the allow write access if you want
 - Save the key
