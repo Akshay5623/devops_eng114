@@ -943,7 +943,7 @@ Continuous Delivery (CD) is an extension of continuous integration to make sure 
 Continuous Deployment (CDE) goes one step further than CD, with this practice, every change that passes all stages of your production pipeline is released to your customers, there is no human intervention, and only a failed test will prevent a new change to be deployed to production
 
 ### What is Jenkins?
-Jenkins is a self-contained, open source automation server that can be used to automate all sorts of tasks related to building, testing, and delivering or deploying software.
+Jenkins is a self-contained, open source automation server that can be used to automate all sorts of tasks related to setting up, building, testing, and delivering or deploying software.
 
 Jenkins can be installed through native system packages, Docker, or even run standalone by any machine with a Java Runtime Environment (JRE) installed.
 
@@ -971,13 +971,82 @@ The image below shows the pipeline that Jenkins can run, it covers everything fr
 
 Image from https://medium.com/@ahshahkhan/devops-culture-and-cicd-3761cfc62450
 
+Before deciding whether to implement a CI/CD pipeline you should undertake a cost benefit analysis. 
 
+## First part to set up Jenkins
 
+- Need to generate SSH key pair on the local host in the .ssh folder
 
+- Need to copy the 114.pub key to our GitHub
 
+- Test the SSH connection by pushing something to GitHub
 
+How to create SSH for GitHub account
+https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
 
+## First part to set up Jenkins
 
+### Need to generate SSH key pair on the local host in the .ssh folder
+
+- cd into .ssh folder on your terminal
+
+- Run the following command
+- `ssh-keygen -t rsa -b 4096 -C "your email you used for github"`
+
+- When prompted, name the file in the way you want
+
+- Keep pressing enter until you see the keys randomart image
+
+- To show the public key
+- `cat nameyougave.pub` - copy the contents that appear.
+
+### Need to copy the 114.pub key to our GitHub
+
+- Log into your github
+- Go to settings in the top right of the page
+- Go to SSH and GPG keys
+- Add new SSH key
+- Name the key
+- Copy the key into the box
+- Save key
+
+### Test the SSH connection by pushing something to GitHub
+
+- cd out of ssh
+
+- Make new folder
+
+- git clone the repo with the SSH link
+
+- If you get permission denied go back to .ssh folder and run the following command
+- `$ eval "$(ssh-agent -s)"`
+- Then run the following command
+- `ssh-add ~/.ssh/114`
+- Try to run the git clone command again
+
+if that works and you have a README file make a change using `nano README.md`
+- save the file
+- git add .
+
+- git commmit -m "testing ssh"
+
+- git push -u origin main
+
+### For SSH keys between Jenkins and GitHub
+
+- Generate a new key pair using the steps above, name it `yourname-jenkins`
+- Copy the public key
+- Go to the GitHub repo which contains the app
+- Go to settings (next to insights not the top corner)
+- Go to deploy keys
+- Name it `yourname-jenkins`
+- Copy the key into the box
+- Check the allow write access if you want
+- Save the key
+
+![](images/Jenkins-own-diagram.png)
+
+Testing webhook attempt 4
 
 
 
