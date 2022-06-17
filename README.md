@@ -1046,11 +1046,71 @@ if that works and you have a README file make a change using `nano README.md`
 
 ![](images/Jenkins-own-diagram.png)
 
-Testing webhook attempt 4
-test dev branch now
-test merge
-testing 2nd job
+Task 1 - Building the Continuous Integration - Localhost to GitHub to GitHub webhook to Jenkins to Jenkins test env
+
+- Freestyle project - Name it yourname-CI
+- In description - Building CI
+- Discard old builds -3 like normal
+- Tick github projects
+- Paste the HTTP url of the repo
+- Restrict where project can be run
+- Sparta ubuntu node
+- Source code management
+- Click on git
+- Add the SSH url of the repo here
+- Click on add next to credentials
+- Choose ssh key with user name
+- Username eng114-yourname
+- Paste contents of jenkins private key into the section
+- Save
+- On SCM click on your key and there should be no errors
+- Branch specifier */main
+- Build triggers - select GitHub hook trigger for GITScm polling
+- Build environment - select Provide Node and npm bin/ folder to PATH
+- Build - Execute shell - 
+-		cd app
+		cd app
+		npm install
+		npm test
+- Save
+
+Setting up a webhook
+- Go to the settings in the repo you want to hook from
+- Go to webhooks
+- Enter the http://jenkins-ip:8080/gtihub-webhook/
+- Change application type to application/json
+- Save the webhook
+- On the jenkins job go to configure
+- Go to build triggers
+- Select github hook trigger for GITScm polling
+- Save
+- To test it, push a line of new code to the repo and jenkins should automatically start a new build for the job.
+
+### Configure your job to checkout code from the dev branch rather than the master branch
+
+- Create a replica job of the CI job but call it yourname-test-dev
+
+- On VS Code or terminal in the right folder run the following command:
+
+- `git checkout -b dev` - This creates a new branch called dev and switches to it
+
+- Go to your job on Jenkins and click on configure.
+
+- change branch specifier on Source code management to */dev - This will start getting code pushed to the dev branch instead of the main branch
 
 
+### Have the job merge the develop branch code with the master branch and test against that using Git Publisher
+
+- Go to the job test-dev and click on configure
+- Go to post build actions on the job
+- Select Git Publisher
+- Tick push only if build succeeds
+- Merge results
+- On branches click add branch
+- Branch to push - main
+- Target remote name - origin
+- Save it
+
+Test by pushing code on the dev branch, the webhook should grab the code from github and automatically test it. if the build is successful it will merge the dev branch to the main branch and then test the main branch with the CI job.
 
 
