@@ -1116,5 +1116,40 @@ Test by pushing code on the dev branch, the webhook should grab the code from gi
 
 ### CD Task
 
+- Create a new EC2 instance that allows the same ports as normal as well as port 22 from the Jenkins IP
+
+###  Create a new job in Jenkins that gets triggered when the previous one is successful
+
+
+- Create a new job called yourname-CD
+- Freestyle project
+- In build triggers, click on 'build after other projects are built' choose the project which collects the code from the main branch eg Akshay-CI
+- In Build environment tick SSH agent and select the right key
+- In execute shell run the following script
+-       - scp -v -r -o StrictHostKeyChecking=no app/ ubuntu@public.ip.of.app.instance:/home/ubuntu/
+        - scp -v -o StrictHostKeyChecking=no default ubuntu@public.ip.of.app.instance:/home/ubuntu/
+        - ssh -A -o "StrictHostKeyChecking=no" ubuntu@public.ip.of.app.instance << EOF
+        - sudo apt update -y && sudo apt upgrade -y
+        - sudo apt install nginx -y
+        - sudo systemctl start nginx
+        - sudo systemctl enable nginx
+        - sudo curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+        - sudo apt install nodejs -y
+        - sudo apt install npm -y
+        - sudo apt install python-software-properties -y
+        - sudo rm -rf etc/nginx/sites-available/default
+        - sudo cp default /etc/nginx/sites-available/
+        - sudo nginx -t
+        - sudo systemctl restart nginx
+        - sudo systemctl enable nginx
+        - cd app
+        - cd app
+        - npm install
+        - nohup node app.js > /dev/null 2>&1 &
+
+- The first scp command will copy the app over to the EC2 Instance
+- The second scp command will copy over the default file to the EC2 Instance for reverse proxy
+- The SSH command will allow Jenkins to SSH into the machine
+- All other commands will install the required dependencies for the app to run.
 
 
