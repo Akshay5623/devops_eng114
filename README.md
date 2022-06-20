@@ -1,6 +1,6 @@
 # What is DevOps
 DevOps cultural approach to software development project structure with a particular philosophy designed to achieve the following things:
-aaaaaaaaaaaaaaaaaaaaaaasdsdsd
+
 - Increased collaboration
 - Reduction in silos
 - Shared responsibility
