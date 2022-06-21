@@ -1152,4 +1152,91 @@ Test by pushing code on the dev branch, the webhook should grab the code from gi
 - The SSH command will allow Jenkins to SSH into the machine
 - All other commands will install the required dependencies for the app to run.
 
+## Setting up Jenkins from scratch on a Fresh EC2 Instance.
+- Create a new EC2 instance on AWS
+- When setting up, ensure the right VPC, Subnet are selected and that the public IP is enbaled
+- Ensure the security group is set up correctly. Need to allow port 8080 as this is the port that Jenkins listens on.
+- Once the machine is set up we want to SSH into it via GitBash to install Jenkins
+- Once SSH'ed into the machine we need to run the following commands in this order to install Jenkins
+-       Run the following commands
+        # To check our machines have Internet access
+        sudo apt update -y
+        sudo apt upgrade -y
+        
+        # Install the right version of Java as Jenkins runs on Java 8
+        sudo apt install openjdk-8-jdk
 
+        # Import the GPG keys of the Jenkins repository
+        wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+
+        # Next, add the Jenkins repository to the system
+        sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+
+        # To install Jenkins run these next two commands
+        sudo apt update -y
+        sudo apt install jenkins
+
+        # Check the status of Jenkins
+        sudo systemctl status jenkins
+
+If the status of Jenkins is Active we can go to our browser and navigate to JenkinsIP:8080
+
+You should see the following
+
+![](images/Jenkins-setup-1.png)
+
+- To get the password, go into your machine and run the command `cat /var/jenkins_home/secrets/initialAdminPassword`
+- Copy the contents into the administrator password box and continue
+
+You will now see this page
+
+![](images/Jenkins-setup-2.png)
+
+- Install the suggested plugins and we will manually install the following
+- Amazon EC2
+- SSH agent
+- NodeJS - Need to change to version 13.3.0 after installation
+
+You will see this page
+
+![](images/Jenkins-setup-3.png)
+
+- You just need to wait at this point for the plugins to install
+
+You will then see this page
+
+![](images/Jenkins-setup-4.png)
+
+- Create your user name and password to log into the Jenkins 
+- If you select continue as admin your username will be `admin` and your password will be the inital admin password
+- Best practice is to create a username and password
+
+The next page will be this
+
+![](images/Jenkins-setup-5.png)
+
+- This can be kept the way it is
+- Click save and finish
+
+You should now see this page
+
+![](images/Jenkins-setup-6.png)
+
+### If you see this, congratulations you are ready to create a pipeline!
+
+To install plugins
+- Go to `manage Jenkins`
+- Go to `plugin manager`
+- Type the plugin you want
+- Tick the check box and click install
+- You may need to restart Jenkins for plugins to install
+
+To change version of NodeJS 
+- Go to `manage Jenkins`,
+- Then go to `global tool configuration`,
+- Scroll down to `NodeJS`,
+- Click on `Add NodeJS`,
+- Name it what you want, 
+- Ensure the install automatically box is ticked.
+- Under Install from nodejs.org Version select `NodeJS 13.3.0`.
+- Save the changes and youre ready to go!
