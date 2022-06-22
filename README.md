@@ -1240,3 +1240,200 @@ To change version of NodeJS
 - Ensure the install automatically box is ticked.
 - Under Install from nodejs.org Version select `NodeJS 13.3.0`.
 - Save the changes and youre ready to go!
+
+# Infrastructure as Code (IaC)
+
+## What is IaC?
+Infrastructure as code (IaC) is the way of defining computing and network infrastructure through source code, the same way you do for applications. Rather than manually configuring your infrastructure or using a one-off isolated script, IaC gives you the power to write code, using a high-level language, to decide how infrastructure should be configured and deployed.
+
+## Why use IaC?
+The guiding principle behind IaC is to enforce consistency among DevOps team members by representing the desired state of their infrastructure via code. Moreover, the code can be kept in source control, which means it can be audited, tested on, and used to create reproducible builds with continuous delivery
+
+## Benefits of IaC
+- Deployment: removing the manual provisioning interaction with cloud providers means a quicker deployment speed.
+- Recovery: identifying issues in the configuration can mean quick recovery from failures.
+- Consistency: deploying resources are the same each time, resolving infrastructure fragility.
+- Modification: modifying resources can have a quick turnaround time.
+- Reusability: reusing parts of the infrastructure architecture in future projects.
+- Version Control: storing the infrastructure code in version control systems.
+- Visibility: writing configuration as code acts as documentation for the infrastructure.
+
+## What tools are available?
+Below is an image which shows a comparison of the different IaC tools available.
+
+![](images/IaC-Comparison.png)
+
+## What is configuration management and orchestration under IaC?
+### Configuration Management (CM):
+CM maintains the consistency of an application’s performance, as well as its functional and physical inputs along with requirements, overall design, and operations throughout the lifespan of the product.
+
+Essentially involves the migration of configs between different environments backed by a control system to configure an infrastructure so it’s prepared for deployment.
+
+Configuration Management is a way to configure servers. The configuration could be:
+
+- Installing applications
+- Ensuring services are stopped or started
+- Installing updates
+- Opening up ports
+
+Realistically and technically, you can use CM for IaC. The biggest problem is configuration drift:
+
+Configuration drift is when someone automates a deployment with CM and a person goes into the server and changes the config. No one will know and there isn't an actual blocker to stop the person from doing that.
+
+### Orchestration:
+- The automated configuration, management, and coordination of computer systems, applications, and services.
+- Can automate a process or workflow that involves many steps across multiple different systems.
+- Can automate IT processes such as server provisioning, incident management, cloud orchestration, database management
+
+In orchestration, the person designing the process dictates the desired result. However, the computer can make decisions based on changing circumstances. This capability makes orchestration significantly more complex than task automation. An orchestrated system can:
+
+- Make decisions based on varying factors.
+- React to different events.
+- Keep track across various IT environments (apps, mobile devices, databases, etc.)
+
+## What is Ansible?
+Ansible is an open-source automation tool, or platform, used for IT tasks such as configuration management, application deployment, intraservice orchestration, and provisioning.
+
+## Benefits of Ansible
+- Free: Ansible is an open-source tool.
+- Very simple to set up and use: No special coding skills are necessary to use Ansible’s playbooks.
+- Powerful: Ansible lets you model even highly complex IT workflows. 
+- Flexible: You can orchestrate the entire application environment no matter where it’s deployed. You can also customize it based on your needs.
+- Agentless: You don’t need to install any other software or firewall ports on the client systems you want to automate. You also don’t have to set up a separate management structure.
+- Efficient: Because you don’t need to install any extra software, there’s more room for application resources on your server.
+
+## How does IaC fit into DevOps?
+IaC is an important part of implementing DevOps practices and continuous integration/continuous delivery (CI/CD). IaC takes away the majority of provisioning work from developers, who can execute a script to have their infrastructure ready to go.
+
+Aligning development and operations teams through a DevOps approach leads to fewer errors, manual deployments, and inconsistencies. 
+
+IaC helps you to align development and operations because both teams can use the same description of the application deployment, supporting a DevOps approach.
+
+## How does IaC benefit the Business?
+- IaC boosts productivity through automation
+- Consistency in configuration and setup
+- Minimizing risk of human error
+- Increased efficiency in software development
+- Facilitating financial savings
+
+Read more on the benefits to the business in the link below
+
+https://www.techadv.com/blog/5-benefits-infrastructure-code-iac-modern-businesses-cloud#:~:text=%205%20Benefits%20of%20Infrastructure%20as%20Code%20%28IaC%29,IaC%20allows%20IT%20experts%20to%20maximize...%20More%20
+
+
+## Setting up the controller machine on Vagrant
+
+Configure the Vagrantfile as I have - use the exact configuration from line 79 onwards including leaving the comments the way they are. Make sure all other configurations above are commented out.
+
+Once we have run the `vagrant up` command in the right place, we should have 3 machines running. Machine names should be controller, app and db.
+
+SSH into each machine using `vagrant ssh machinename`
+
+Run `sudo apt-get update -y` and then run `sudo apt-get upgrade -y`. The upgrade command may take a while on each machine.
+
+Exit all machines and SSH into the `controller`
+
+Once inside run the following commands:
+        
+        sudo apt-get update
+	
+        sudo apt-get install software-properties-common
+	
+        sudo apt-add-repository ppa:ansible/ansible
+	
+        sudo apt-get update -y
+	
+        sudo apt-get install ansible -y
+
+       
+Once this is done check the version by running `ansible --version`
+
+Navigate to /etc/ansible
+
+Run `ls` to ensure there is a file called `hosts`
+
+`sudo nano hosts`
+
+Enter the following to set up connections to the web and db machines using the private ip - I put them both directly under EX 2.
+
+Can put web one under EX2 and db one under EX 3
+
+        [web]
+        web.private.ip ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+ 
+        [db]
+        db.private.ip ansible_connection=ssh ansible_ssh_user=vagrant ansible_ssh_pass=vagrant
+
+To check the connections from the controller machine run the commands
+
+- `ansible all -m ping` - all hosts
+- `ansible web -m ping` - web machine
+- `ansible db -m ping` - db machine
+
+Note: Sometimes whe you need to stop a loop CTRL X will completely exit your SSH. Try using CTRL Z as this is essentially a soft break. Mainly Windows 11 users have this problem.
+
+To SSH into the web or db from the controller
+- `ssh vagrant@private.ip.of.web` - To SSH into the web machine
+- `ssh vagrant@private.ip.of.db` - To SSH into the db machine
+- When prompted type `yes`
+- Enter the password
+- When inside run `sudo apt-get update -y` to ensure the machine has internet access
+- When you exit the machine you should land back in the controller machine.
+
+### Ansible ad-hoc commands from controller
+- `ansible web -a "uname -a"` - This will get the name of the web machine
+- `ansible web -a "date"` - Checks location of the web server
+- `ansible web -a "free"` - Check how much memory is on the web machine
+- `ansible web -a "ls"` - Check files on web machine
+- `ansible web -a "ls -a"` - Checks files and hidden files on web machine
+- `ansible web -m copy -a "src=/etc/ansible/testing-connection.txt dest=."` - This will copy the testing-connection.txt file from the controller to the web machine
+
+### Why YAML?
+- Used with ansible, Docker compose, Kubernetes and more
+- Used to create Playbooks
+- Good for automation scripts for config management
+- Extension is file.yaml or file.yml
+- Very reusable
+- YAML file is defined by --- at the top
+
+### Creating playbooks
+Ensure you are in the controller machine and in etc/ansible
+
+`sudo nano nginx-playbook.yml`
+
+enter the following text
+        ---
+
+        # Who is the agent - name
+        - hosts: web
+
+        # We need detail information about the server
+         gather_facts: yes
+
+        # We need sudo access
+         become: true
+
+        # Instructions to set up nginx web server in web agent node
+        tasks:
+        - name: Install Nginx web server
+          apt: pkg=nginx state=present
+
+        # Need to ensure that nginx is running
+
+Save the file
+
+Run `ansible-playbook nginx-playbook.yml`
+
+You should have no errors
+
+Run `ansible web -a "systemctl status nginx"`
+
+This should show the status of nginx as active
+
+
+### Need to run sudo npm install in correct app folder in web machine and then run npm start
+- When in web machine run cd $HOME then run ls and makesure the app is there
+- Then run sudo npm install and npm start
+- The app should work!
+
+
