@@ -1,0 +1,10 @@
+---
+
+- hosts: web
+  gather_facts: yes
+  become: true
+  tasks:
+  - name: copy app to web
+    copy:
+      src: /etc/ansible/devops_eng114/app
+      dest: .

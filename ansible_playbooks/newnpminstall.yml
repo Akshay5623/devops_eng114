@@ -1,0 +1,8 @@
+---
+
+- hosts: web
+  gather_facts: yes
+  become: true
+  tasks:
+  - name: Install NPM
+    apt: pkg=npm state=present update_cache=yes
