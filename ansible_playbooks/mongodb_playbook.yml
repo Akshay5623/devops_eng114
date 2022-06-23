@@ -1,0 +1,17 @@
+---
+
+- hosts: db
+  gather_facts: yes
+  become: true
+
+  tasks:
+  - name: Install MongoDB
+    apt: pkg=mongodb state=present
+
+  - name: copy mongo config file
+    copy:
+      src: ~/devops_eng114/mongod.conf
+      dest: /etc/mongodb.conf
+
+  - name: restart and enable mongo
+    service: name=mongodb state=restarted enable=yes
