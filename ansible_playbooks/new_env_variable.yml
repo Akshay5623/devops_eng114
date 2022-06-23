@@ -14,4 +14,4 @@
       node seeds/seed.js
       npm start
     environment:
-      DB_HOST: mongodb://192.168.33.11:27017/posts
+      DB_HOST: mongodb://ip.of.db.machine:27017/posts

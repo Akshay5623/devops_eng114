@@ -1348,6 +1348,15 @@ Once inside run the following commands:
        
 Once this is done check the version by running `ansible --version`
 
+To SSH into the web or db from the controller
+- `ssh vagrant@private.ip.of.web` - To SSH into the web machine
+- `ssh vagrant@private.ip.of.db` - To SSH into the db machine
+- When/if prompted type `yes`
+- Enter the password
+- When inside run `sudo apt-get update -y` to ensure the machine has internet access
+- When you exit the machine you should land back in the controller machine.
+- You need to do these steps otherwise the next ones wont work.
+
 Navigate to /etc/ansible
 
 Run `ls` to ensure there is a file called `hosts`
@@ -1372,13 +1381,6 @@ To check the connections from the controller machine run the commands
 
 Note: Sometimes whe you need to stop a loop CTRL X will completely exit your SSH. Try using CTRL Z as this is essentially a soft break. Mainly Windows 11 users have this problem.
 
-To SSH into the web or db from the controller
-- `ssh vagrant@private.ip.of.web` - To SSH into the web machine
-- `ssh vagrant@private.ip.of.db` - To SSH into the db machine
-- When prompted type `yes`
-- Enter the password
-- When inside run `sudo apt-get update -y` to ensure the machine has internet access
-- When you exit the machine you should land back in the controller machine.
 
 ### Ansible ad-hoc commands from controller
 - `ansible web -a "uname -a"` - This will get the name of the web machine
@@ -1436,4 +1438,16 @@ This should show the status of nginx as active
 - Then run sudo npm install and npm start
 - The app should work!
 
+Order I ran playbooks in
+- Make sure the repo is cloned in etc/ansible
+- Copy app
+- Node install
+- Install npm
+- Reverse proxy
+- Mongo db install
+- Environment variable
+- All playbooks are in the playbook folder and start with new. The ones with new are the working scripts
+
+You should see the posts when navigating to the app ip/posts
+You should see the app when navigating to the app ip
 
