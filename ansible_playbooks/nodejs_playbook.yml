@@ -1,0 +1,35 @@
+---
+
+# Who is the agent (name)
+- hosts: web
+
+# We need info about the server
+  gather_facts: yes
+
+# We need sudo access
+  become: true
+
+# Install NodeJs
+  tasks:
+  - name: Install Nodejs on web server
+    apt: pkg=nodejs state=present
+
+# Install npm
+  - name: Install npm on web server
+    apt: pkg=npm state=present
+
+# Copy default file for reverse proxy
+  - name: Copy default file to web server
+    ansible.builtin.copy:
+      src: ~/devops_eng114/default
+      dest: /etc/nginx/sites-available/default
+
+# Copy app folder to web server
+  - name: Copy app folder to web server
+    ansible.builtin.copy:
+      src: /devops_eng114/app
+      dest: home/
+
+# Restart nginx 
+- name: restart nginx
+  service: name=nginx state=restarted enabled=yes

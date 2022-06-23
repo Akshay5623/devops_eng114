@@ -1,0 +1,18 @@
+---
+
+# Who is the agent - name
+- hosts: web
+
+# We need detailed information about the server
+  gather_facts: yes
+
+# We need sudo access
+  become: true
+
+# Instructions to set up nginx web serber in web agent node
+
+  tasks:
+  - name: Install Nginx web server
+    apt: pkg=nginx state=present
+
+# Need to ensure that nginx is running
