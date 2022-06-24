@@ -1476,23 +1476,23 @@ First steps
 aws_access_key: enter your aws access key here
 aws_secret_key: enter your aws secret key here
 ```
-- press `esc` `:wq!` `enter` - this will exit the vim editor
+- Press `esc` `:wq!` `enter` - this will exit the vim editor
 - `sudo cat pass.yml` - you should see random numbers and letters
 - `sudo chmod 666 pass.yml` - ensure the right permissions have been given
 - `cd ~/.ssh`
-- sudo nano eng114.pem
-- paste eng114.pem key content from localhost
-    - in automation you'll need to copy this over 
-- save the nano file
+- `sudo nano eng114.pem` - replace eng114 with the name of your pem key
+- Paste eng114.pem key content from localhost
+    - In automation you'll need to copy this over 
+- Save the nano file
 - `sudo chmod 400 eng114.pem`
 ```
 If you have to use a different .pem file as your pem key broke the create a new pem key on AWS and then follow from `cd ~/.ssh` to sudo chmod command and use the right file name
 ```
 - `ssh-keygen -t rsa` 
-- call it `eng114`
-- enter
-- enter
-- You should see the keys randart image.
+- Call it `eng114`
+- Enter
+- Enter
+- You should see the keys random art image.
 
 After completing the steps above make sure we are still in the controller machine and in /etc/ansible
 
