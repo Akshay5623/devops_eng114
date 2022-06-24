@@ -1451,3 +1451,102 @@ Order I ran playbooks in
 You should see the posts when navigating to the app ip/posts
 You should see the app when navigating to the app ip
 
+## Going Hybrid
+- We want to keep the ansible controller on the local host but deploy the app on an AWS EC2 instance.
+
+Install the following dependencies on the controller.
+- `sudo apt install python`
+- `sudo apt install python-pip`
+- `sudo apt install boto boto3 ansible`
+
+- You may not need to keep the ansible bit on the last command, we didnt as we already had ansible installed. If you dont have ansible installed then keep it there.
+
+First steps
+- Ensure you have SSH'ed into the controller machine
+- `cd /etc/ansible/`
+- `mkdir group_vars && cd group_vars`
+- `mkdir all && cd all`
+- `sudo ansible-vault create pass.yml`
+- enter new vault password
+- confirm new vault password
+- You will enter a vim file
+    - `ii` to go to insert mode
+    - enter the following code
+```
+aws_access_key: enter your aws access key here
+aws_secret_key: enter your aws secret key here
+```
+- press `esc` `:wq!` `enter` - this will exit the vim editor
+- `sudo cat pass.yml` - you should see random numbers and letters
+- `sudo chmod 666 pass.yml` - ensure the right permissions have been given
+- `cd ~/.ssh`
+- sudo nano eng114.pem
+- paste eng114.pem key content from localhost
+    - in automation you'll need to copy this over 
+- save the nano file
+- `sudo chmod 400 eng114.pem`
+```
+We ended up having to use a different .pem file as our pem key broke. If this is the case follow from `cd ~/.ssh` to sudo chmod command and use the right file name
+```
+- `ssh-keygen -t rsa` 
+- call it `eng114`
+- enter
+- enter
+- You should see the keys randart image.
+
+After completing the steps above make sure we are still in the controller machine and in /etc/ansible
+
+We now want to create a playbook for creating an EC2 instance
+
+`sudo nano create-ec2.yml` - The name of your file (in this case create-ec2.yml) is important as they will also serve as your tags.
+
+Once in the playbook re create the code in the `create-ec2.yml` file in the ansible_playbooks folder on the repo.
+
+Indentation is incredibly important when creating .yml files, so copy and pasting may cause an issue. Typing it out may take longer but will potenitally be more accurate.
+
+Once the file has been created and saved run the following command
+
+```
+ansible-playbook create-ec2.yml --ask-vault-pass --tags create-ec2
+```
+- You will need to enter the vault password you created earlier when prompted
+
+If the command runs correctly you should now see a new AWS instance in the EC2 dashboad with whatever you named it.
+
+```
+NOTE: if you get the following error:
+
+fatal: [localhost]: FAILED! => {"changed": false, "msg": "Instances with id(s) ['i-0c2154f122e72388c'] were created previously but have since been terminated - use a (possibly different) 'instanceid' parameter"}
+
+You need to change the id in the vars section of the create-ec2.yml file
+```
+
+Now the instance is running get the public ip and in the hosts file add the aws group like we have for app and db
+
+To SSH into the machine from the controller we need to navigate to SSH folder `cd ~/.ssh`
+
+Once inside run the command 
+- `sudo copy the command from the aws instance`
+
+If the command says root, change it to ubuntu.
+
+- Type yes when prompted.
+- If successful run the following commands
+```
+sudo apt-get update -y
+sudo apt-get upgrade -y
+```
+`Exit` from the aws instance and you should land back into the controller
+
+## Getting NGINX to work on EC2 instance
+- Navigate to /etc/ansible in the controller
+- sudo nano `aws-nginx-playbook.yml`
+- re create the content from the aws-nginx-playbook.yml file in the ansible_playbooks folder on the repo
+- Save the file
+- Run the following command
+```
+sudo ansible-playbook aws-nginx-playbook.yml --ask-vault-pass --tags aws-nginx-playbook
+```
+- You will need to enter the vault password
+
+If everything has worked we can navigate to the public ip of the ec2 app instance and we should see the Nginx page.
