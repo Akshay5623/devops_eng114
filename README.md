@@ -1486,7 +1486,7 @@ aws_secret_key: enter your aws secret key here
 - save the nano file
 - `sudo chmod 400 eng114.pem`
 ```
-We ended up having to use a different .pem file as our pem key broke. If this is the case follow from `cd ~/.ssh` to sudo chmod command and use the right file name
+If you have to use a different .pem file as your pem key broke the create a new pem key on AWS and then follow from `cd ~/.ssh` to sudo chmod command and use the right file name
 ```
 - `ssh-keygen -t rsa` 
 - call it `eng114`
