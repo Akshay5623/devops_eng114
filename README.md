@@ -1486,7 +1486,7 @@ aws_secret_key: enter your aws secret key here
 - Save the nano file
 - `sudo chmod 400 eng114.pem`
 ```
-If you have to use a different .pem file as your pem key broke the create a new pem key on AWS and then follow from `cd ~/.ssh` to sudo chmod command and use the right file name
+If you have to use a different .pem file as your pem key broke the create a new pem key on AWS and then follow from `cd ~/.ssh` to sudo chmod command and use the right file name. You will also need to change the key at the end of the aws group in the hosts file to the right name.
 ```
 - `ssh-keygen -t rsa` 
 - Call it `eng114`
@@ -1550,3 +1550,5 @@ sudo ansible-playbook aws-nginx-playbook.yml --ask-vault-pass --tags aws-nginx-p
 - You will need to enter the vault password
 
 If everything has worked we can navigate to the public ip of the ec2 app instance and we should see the Nginx page.
+
+![](images/aws%20architecture.png)
