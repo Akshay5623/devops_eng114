@@ -1,0 +1,42 @@
+---
+
+- name: testsdb
+  hosts: db
+  become: true
+  gather_facts: yes
+  tasks:
+    - name: Timezone
+      debug:
+        msg: "Machine timezone is {{ ansible_date_time.tz }}" # Will get the timezone of the machine and show it in this message
+
+    - name: OS
+      debug:
+        msg: "OS of the machine is {{ ansible_os_family }}" # Will get the OS of the DB machine
+
+    - name: "Check if mongodb is installed" # This will check to see if MongoDB is installed
+      package_facts:
+        manager: "auto" 
+
+    - name: Confirm mongodb is installed
+      assert:
+        that: "'mongodb-org' in ansible_facts.packages" # Will check to see if the package called mongodb-org is in the right place
+
+    - name: Check if port 27017 is listening
+      shell: lsof -i -P -n | grep LISTEN
+      register: port_check_27017
+
+    - name: Confirm port 27017 is listening
+      assert:
+        that: "'*:27017 (LISTEN)' in port_check_27017.stdout"
+
+    - name: Get service facts
+      service_facts:
+    
+    - name: Check if mongodb is running
+      assert:
+        that:
+          - "'{{ansible_facts.services['mongod.service'].state}}' == 'running'" # Checks to see the service state of mongo
+        fail_msg: "Mongo is currently not actively running, please start or restart the service." # Will print the message if Mongo is not running       
+
+
+# For more information about the shell command on line 25: https://explainshell.com/explain?cmd=sudoedit.8%20lsof%20-i%20-P%20-n%20%7C%20grep%20LISTEN
