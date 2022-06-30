@@ -1451,3 +1451,199 @@ Order I ran playbooks in
 You should see the posts when navigating to the app ip/posts
 You should see the app when navigating to the app ip
 
+## Going Hybrid
+- We want to keep the ansible controller on the local host but deploy the app on an AWS EC2 instance.
+
+Install the following dependencies on the controller.
+- `sudo apt install python`
+- `sudo apt install python-pip`
+- `sudo apt install boto boto3 ansible`
+
+- You may not need to keep the ansible bit on the last command, we didnt as we already had ansible installed. If you dont have ansible installed then keep it there.
+
+First steps
+- Ensure you have SSH'ed into the controller machine
+- `cd /etc/ansible/`
+- `mkdir group_vars && cd group_vars`
+- `mkdir all && cd all`
+- `sudo ansible-vault create pass.yml`
+- enter new vault password
+- confirm new vault password
+- You will enter a vim file
+    - `ii` to go to insert mode
+    - enter the following code
+```
+aws_access_key: enter your aws access key here
+aws_secret_key: enter your aws secret key here
+```
+- Press `esc` `:wq!` `enter` - this will exit the vim editor
+- `sudo cat pass.yml` - you should see random numbers and letters
+- `sudo chmod 666 pass.yml` - ensure the right permissions have been given
+- `cd ~/.ssh`
+- `sudo nano eng114.pem` - replace eng114 with the name of your pem key
+- Paste eng114.pem key content from localhost
+    - In automation you'll need to copy this over 
+- Save the nano file
+- `sudo chmod 400 eng114.pem`
+```
+If you have to use a different .pem file as your pem key broke the create a new pem key on AWS and then follow from `cd ~/.ssh` to sudo chmod command and use the right file name. You will also need to change the key at the end of the aws group in the hosts file to the right name.
+```
+- `ssh-keygen -t rsa` 
+- Call it `eng114`
+- Enter
+- Enter
+- You should see the keys random art image.
+
+After completing the steps above make sure we are still in the controller machine and in /etc/ansible
+
+We now want to create a playbook for creating an EC2 instance
+
+`sudo nano create-ec2.yml` - The name of your file (in this case create-ec2.yml) is important as they will also serve as your tags.
+
+Once in the playbook re create the code in the `create-ec2.yml` file in the ansible_playbooks folder on the repo.
+
+Indentation is incredibly important when creating .yml files, so copy and pasting may cause an issue. Typing it out may take longer but will potenitally be more accurate.
+
+Once the file has been created and saved run the following command
+
+```
+ansible-playbook create-ec2.yml --ask-vault-pass --tags create-ec2
+```
+- You will need to enter the vault password you created earlier when prompted
+
+If the command runs correctly you should now see a new AWS instance in the EC2 dashboad with whatever you named it.
+
+```
+NOTE: if you get the following error:
+
+fatal: [localhost]: FAILED! => {"changed": false, "msg": "Instances with id(s) ['i-0c2154f122e72388c'] were created previously but have since been terminated - use a (possibly different) 'instanceid' parameter"}
+
+You need to change the id in the vars section of the create-ec2.yml file
+```
+
+Now the instance is running get the public ip and in the hosts file add the aws group like we have for app and db
+
+To SSH into the machine from the controller we need to navigate to SSH folder `cd ~/.ssh`
+
+Once inside run the command 
+- `sudo copy the command from the aws instance`
+
+If the command says root, change it to ubuntu.
+
+- Type yes when prompted.
+- If successful run the following commands
+```
+sudo apt-get update -y
+sudo apt-get upgrade -y
+```
+`Exit` from the aws instance and you should land back into the controller
+
+## Getting NGINX to work on EC2 instance
+- Navigate to /etc/ansible in the controller
+- sudo nano `aws-nginx-playbook.yml`
+- re create the content from the aws-nginx-playbook.yml file in the ansible_playbooks folder on the repo
+- Save the file
+- Run the following command
+```
+sudo ansible-playbook aws-nginx-playbook.yml --ask-vault-pass --tags aws-nginx-playbook
+```
+- You will need to enter the vault password
+
+If everything has worked we can navigate to the public ip of the ec2 app instance and we should see the Nginx page.
+
+![](images/aws%20architecture.png)
+
+### Going fully on cloud!
+
+- Create a new controller on AWS
+- SSH into the controller and install the required dependencies on the controller (This can also be done in user data when spinning up the machine on AWS)
+```
+# Update and upgrade
+sudo apt update -y && sudo apt upgrade -y
+sudo apt-get update -y
+
+# Install ansible	
+sudo apt-get install software-properties-common
+sudo apt-add-repository ppa:ansible/ansible -y
+sudo apt-get update
+sudo apt-get install ansible -y
+
+# Install python and boto3
+sudo apt install python
+sudo apt install python-pip -y
+sudo pip install --upgrade pip
+sudo pip install boto
+sudo pip install boto3
+```
+
+- Then create the vault
+```
+cd /etc/ansible
+mkdir group_vars
+cd group_vars
+mkdir all
+cd all
+sudo ansible-vault create pass.yml
+enter new vault password
+confirm new vault password
+You will enter a vim file
+`ii` to go to insert mode
+** enter the following code:
+
+aws_access_key: enter your aws access key here
+aws_secret_key: enter your aws secret key here
+
+Press esc :wq! enter - this will exit the vim editor
+sudo cat pass.yml - you should see random numbers and letters
+sudo chmod 666 pass.yml - ensure the right permissions have been given
+```
+Then
+```
+- `cd ~/.ssh`
+- `sudo nano filename.pem` - replace filename with the name of your pem key
+- Paste filename.pem key content from localhost
+    - In automation you'll need to copy this over 
+- Save the nano file
+- `sudo chmod 400 filename.pem`
+
+- sudo ssh-keygen -t rsa -b 4096 
+- Call it eng114
+- Enter
+- Enter
+- You should see the keys random art image.
+```
+
+Create your EC2 instance creation playbook for the app instance in /etc/ansible
+
+Run the command to execute the playbook
+`sudo ansible-playbook aws-create-app-instance.yml --ask-vault-pass --tags aws-create-app-instance`
+
+if the instance has spun up we want to add the ip to the hosts file
+```
+[app]
+ec2-instance ansible_host=ip.of.app.instance  ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/filename.pem
+```
+Once this is done we want to ssh into it via the controller in the .ssh folder using the command on the AWS instance with sudo at the beginning (Ensure the right ip (controller ip) is allowed on the security group on port 22 before sshing)
+
+once in the machine
+`sudo apt update -y`
+`sudo apt upgrade -y`
+
+exit the machine, you should land back in the controller
+navigate to /etc/ansible
+run the command `sudo ansible app -m ping --ask-vault-pass`
+
+If you get a successful ping then we are good to go
+
+Do the same for the DB using the private subnet, hash out the assign public ip part in the .yml file to spin up the instance
+
+set the DB in hosts file
+
+ssh into the machine from the controller in the .ssh folder
+
+run update and upgrade
+
+exit
+
+run the ping command changing app for db
+

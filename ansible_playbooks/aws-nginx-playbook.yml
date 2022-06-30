@@ -1,0 +1,12 @@
+---
+
+- hosts: aws
+  gather_facts: yes
+  become: true
+
+  tasks:
+  - name: Install nginx
+    apt: pkg=nginx state=present
+  - name: restart nginx
+    service: name=nginx state=restarted enabled=yes
+  tags: ['never', 'aws-nginx-playbook']
