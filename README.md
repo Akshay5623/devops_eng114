@@ -541,7 +541,7 @@ After this cd into /etc on DB machine
 
 - printenv DB_HOST to make sure its there
 
-- Sudo npm start
+- Sudo npm startEugael7746
 
 - Go to http:/PUBLIC.IP.OF.APP.INSTANCE:3000/posts and you should see the database info
 
@@ -1647,3 +1647,199 @@ exit
 
 run the ping command changing app for db
 
+# Terraform
+
+## What is Terraform?
+- Terraform is an open-source infrastructure as code software tool owned by HashiCorp.
+
+- It is a tool for building, changing and versioning infrastructure safely and efficiently.
+
+- Terraform enables developers to use a high-level configuration language called HCL (HashiCorp Configuration Language) to describe the desired “end-state”
+
+- Terraform files are created with a .tf extention
+
+- Terraform allows for rapid create of instances using AMIs
+
+## Why Terraform?
+There are a few key reasons developers choose to use Terraform over other Infrastructure as Code tools:
+
+- Open source: Terraform is backed by large communities of contributors who build plugins to the platform.
+
+- Platform agnostic: Meaning you can use it with any cloud services provider. Most other IaC tools are designed to work with single cloud provider.
+
+- Immutable infrastructure: Terraform provisions immutable infrastructure, which means that with each change to the environment, the current configuration is replaced with a new one that accounts for the change, and the infrastructure is reprovisioned. Even better, previous configurations can be retained as versions to enable rollbacks if necessary or desired.
+
+## Benefits of Terraform
+
+- Terraform is OpenSource, platform-agnostic and backed by HashiCorp -
+Terraform is an OpenSource Infrastructure as Code (IaC) tool, And because Terraform is platform-agnostic, it makes it the best Infrastructure as Code (IaC) solution to configure, test and deploy infrastructure across multiple cloud providers such as AWS, Azure, GCP, DigitanalOcean, and more. 
+This means that DevOps teams can use one unified, consistent solution to manage each of their cloud infrastructures.
+
+- Terraform is Declarative - 
+The Terraform language is declarative which means it describes an intended goal rather than the exact steps needed to reach that goal. So Terraform itself is responsible for figuring out how to achieve that state without actually defining all the steps because the current state of the infrastructure is fully captured in the code.
+
+- Declarative, not procedural code - Terraform prefers describing the desired end state of the system, and the tool itself deals with reaching the goals set. With Terraform you simply order the tool to do something with the currently active state of the system, that is why the code base remains quite small and easily understandable.
+
+-  Terraform uses a modular structure - 
+Terraform modules are a powerful way to reuse code and stick to the "DRY" principle which means "Do Not Repeat Yourself".
+
+- Super portability — you have one tool and one language for describing infrastructure for Google cloud, AWS, OpenStack and ANY other cloud. Switching a provider is not a headache anymore.
+
+- Ease of full-stack deployment — you can have Amazon instances running Kubernetes containers with your workloads, and manage the whole system from one tool.
+
+### How to install Terraform
+
+- The following video has how to install Terraform dependant on the system you are using.
+
+https://www.youtube.com/watch?v=oURFbTZLMl0
+
+Once you have completed the installation open your GitBash or VS Code and run the command `terraform`. You should see this
+```
+$ terraform
+Usage: terraform [global options] <subcommand> [args]
+
+The available commands for execution are listed below.
+The primary workflow commands are given first, followed by
+less common or more advanced commands.
+
+Main commands:
+  init          Prepare your working directory for other commands
+  validate      Check whether the configuration is valid
+  plan          Show changes required by the current configuration
+  apply         Create or update infrastructure
+  destroy       Destroy previously-created infrastructure
+
+All other commands:
+  console       Try Terraform expressions at an interactive command prompt
+  fmt           Reformat your configuration in the standard style
+  force-unlock  Release a stuck lock on the current workspace
+  get           Install or upgrade remote Terraform modules
+  graph         Generate a Graphviz graph of the steps in an operation
+  import        Associate existing infrastructure with a Terraform resource
+  login         Obtain and save credentials for a remote host
+  logout        Remove locally-stored credentials for a remote host
+  output        Show output values from your root module
+  providers     Show the providers required for this configuration
+  refresh       Update the state to match remote systems
+  show          Show the current state or a saved plan
+  state         Advanced state management
+  taint         Mark a resource instance as not fully functional
+  test          Experimental support for module integration testing
+  untaint       Remove the 'tainted' state from a resource instance
+  version       Show the current Terraform version
+  workspace     Workspace management
+
+Global options (use these before the subcommand, if any):
+  -chdir=DIR    Switch to a different working directory before executing the
+                given subcommand.
+  -help         Show this help output, or the help for a specified subcommand.
+  -version      An alias for the "version" subcommand.
+  ```
+
+  Run the command `terraform --version` to see what version you have installed. As long as you have a version above v 1.0.4 you are good to go.
+
+  ### Environment variables
+
+  Once we have installed Terraform we need to set the environemtn variables. I will be explaining how to do this on windows
+
+  - Press the windows key
+  
+  - Type `env` and you should see `Edit the system environment variables`. Click on that
+
+- On the window that appears, click on the `Environment Variables` button
+
+- In the `User variables` click on `new`
+
+- We will need to do this twice, so for the first one in the `Variable name` enter `AWS_ACCESS_KEY_ID` and in the value enter your AWS Access Key and press `OK`
+
+- The second time round in `variable name` enter `AWS_SECRET_ACCESS_KEY` and in the value box enter your AWS Secret Key and press `OK`
+
+- Now your environment variables have been set and we can move on to creating an EC2 instance via Terraform!
+
+# Docker
+
+## What is Docker?
+Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.
+
+## Why Docker?
+- Caching a cluster of containers
+- Flexible resource sharing
+- System agnostic: it can be used on most of the major OS, and gives a source of flexibility.
+- Scalability - many containers can be placed in a single host
+- Running your service on hardware that is much cheaper than standard servers
+- Fast deployment, ease of creating new instances, and faster migrations.
+- Ease of moving and maintaining your applications
+- Better security, less access needed to work with the code running inside containers, and fewer software dependencies
+- Docker is not limited to a single use of deployment and is used in workflows such as during development.
+
+
+## Docker Architecture
+![](images/Docker-architecture.webp)
+
+## Containers vs Virtual Machines
+
+While containers share some similarities with virtual machines, there are differences that cause containers to be a much more suitable solution hosting applications.
+
+![](images/Containters_vs_Virtualisation.png)
+
+Containers and virtual machines are both methods of virtualisation, but they have a number of key differences. The diagram above illustrates the structural differences between the two.
+
+### Virtual Machines
+- Emulate the an entire computer to support a full operating system
+- Require a hypervisor to allocate and reserve compute resources (CPU, RAM, storage, etc.) - these resources cannot be shared between VMs
+- Require a lot of resources to run
+- Due to their nature, virtual machines are extremely versatile but require far more resources. This makes them slow to start up. In a project environment, efficiency and effectiveness are key.
+
+### Containers
+- Run on the same kernel (the operating system's core process) as its host machine, meaning it has direct access to the compute resources it needs to use (i.e. no need for a hypervisor)
+- Resources are shared between containers
+- Require far fewer resources to run
+- Are typically designed to perform one task only
+- Unlike virtual machines, containers are extremely lightweight, making them very quick to start up. They are less versatile than virtual machines in their abilities, but are perfectly suited when you only need to perform one task (e.g. host a web application).
+
+## Security with Docker
+There are also security elements to Docker that VMs and bare-metal don't provide without scrutinous effort.
+
+- The Docker image or Dockerfile, are transparent and easily readable to understand what potential security risks could be present.
+
+- As a micro-service, you can link certain security problems to specific locations, thus making it easier to find and resolve vulnerabilities.
+
+- With containers, you only need to secure the host, the Docker daemon (which is much smaller than a virtual operating system) and the application running inside the container. For this reason, containers give you a smaller attack surface to protect.
+
+- Docker also makes for easy updates, pulling latest versions of images and applying patches in quick response to known vulnerabilities. This can be done with minimal disruption to end users.
+
+## Docker Commands
+- `docker images`: Will present the images available
+- `docker ps`: To check the containers running
+- `docker ps -a`: To check every container running including hidden files
+- `docker pull`: to pull the image from docker hub
+- `docker run` : to run the image live directly from dockerhub
+- `docker stop containerid`: stops a running container
+- `docker kill`: kills container by stopping execution. stop gives time to shut down gracefully
+- `docker rm [container id]`:removes container
+- `docker history [image name]`: to view history
+- `docker image rmi [image name]`: deletes image add -f at the end of the command to force delete
+- `docker exec -it containerid bash` - to get into the container
+
+``` 
+if you get this error:
+
+the input device is not a TTY.  If you are using mintty, try prefixing the command with 'winpty'
+
+run the command:
+alias docker="winpty docker"
+
+Then re run the command and you should be good to go
+```
+More commands can be found here: https://docs.docker.com/engine/reference/commandline/docker/
+
+To replace the nginx default page with your own index.html page, makesure youre in the right folder and run the follwing command:
+`docker cp index.html containerid:/usr/share/nginx/html`
+
+Try to keep the image name the same as the repo name for ease of use
+
+To commit your container to an image
+`docker commit containerid dockerusername/imagename`
+
+To push an image to DockerHub
+`docker push dockerusername/imagename`
