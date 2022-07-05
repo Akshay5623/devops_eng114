@@ -1846,9 +1846,9 @@ To push an image to DockerHub
 
 ### Build the Node App from a DockerFile
 
-Pre requisite: Have a folder with the app folder inside it
+Pre requisite: Have a folder with the app folder inside it e.g. I made a folder called DockerNode and copied the app folder into that folder
 
-- In the folder with the app in create a Dockerfile
+- In the folder which contains the app folder (in my case in DockerNode) in create a Dockerfile
 
 Within the docker file add the following code
 ```
