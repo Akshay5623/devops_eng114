@@ -1843,3 +1843,55 @@ To commit your container to an image
 
 To push an image to DockerHub
 `docker push dockerusername/imagename`
+
+### Build the Node App from a DockerFile
+
+Pre requisite: Have a folder with the app folder inside it
+
+- In the folder with the app in create a Dockerfile
+
+Within the docker file add the following code
+```
+# Select the base image
+FROM node
+
+# Label add info about the creator of the image - This is optional
+# LABEL MAINTAINER=enter your email here
+
+# Specify the working directory within the base image
+WORKDIR /usr/src/app/
+
+# Copy the app folder to the working directory
+COPY app/app/ ./
+
+# Install the latest version of NPM
+RUN npm install -g npm@latest
+RUN npm install express
+
+# Expose the right port for the app to run on
+EXPOSE 3000
+
+# CMD command to run the app
+CMD ["node", "app.js"]
+
+```
+Once this has been done and saved run the following command to build the image
+
+```
+docker build -t username/imagename .
+```
+
+Then we want to run the image in a container
+
+```
+docker run -d -p 3000:3000 username/imagename
+```
+NOTE: this can be 3000:80, this will essentially run a reverse proxy
+
+Navigate to `localhost:3000` on your browser and the app should appear.
+
+If this has worked then commit and push the image to dockerhub to the relevant repo
+
+- `docker commit containerid dockerusername/imagename`
+- `docker push dockerusername/imagename`
+
