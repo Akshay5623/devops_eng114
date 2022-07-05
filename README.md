@@ -1886,7 +1886,7 @@ Then we want to run the image in a container
 ```
 docker run -d -p 3000:3000 username/imagename
 ```
-NOTE: this can be 3000:80, this will essentially run a reverse proxy
+NOTE: this can be 80:3000, this will essentially run a reverse proxy
 
 Navigate to `localhost:3000` on your browser and the app should appear.
 
@@ -1895,3 +1895,170 @@ If this has worked then commit and push the image to dockerhub to the relevant r
 - `docker commit containerid dockerusername/imagename`
 - `docker push dockerusername/imagename`
 
+## To lighten the image - Production ready image / multi stage build
+
+I created a Dockerfile inside the app folder and it contained the following code, changed the name of the previous dockerfile for now (check DockerNode folder on local machine to see)
+```
+FROM node AS app
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install -g npm@latest
+RUN npm install express
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "app.js"]
+
+# Multi-stage production ready image
+
+# This is a smaller image than regular node
+FROM node:alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+RUN npm install -g npm@latest
+RUN npm install express
+
+# This will compress the image
+COPY --from=app /usr/src/app /usr/src/app/
+
+EXPOSE 3000
+
+CMD ["node", "app.js"]
+```
+Once this has been saved, build the image and see the size of it.
+- My previous image was 1.04GB and this new image is 258MB
+
+## Docker Compose Task
+We want to create a docker-compose.yml file which will allow us to have 2 containers running, one app, one db and be able to link them together to see the app and posts when navigating to the app on the localhost.
+
+Ensure the docker-compose.yml file is in the same location as the Dockerfile.
+
+Ensure you are in the right folder
+
+Firstly we already have an app image and therefore we have the container ID. We now need to get a Mongo image, run it and get the container ID for that as well
+
+```
+# Get the official mongo image from DockerHub
+docker pull mongo
+
+# To ensure the mongo image is there
+docker images
+
+# This will run the mongo image
+docker run -d -p 27017:27017 mongo
+
+# To get the container ID
+docker ps
+
+# Get the container ID for the app as well
+```
+
+We then want to create a `docker-compose.yml` file
+- This file will be able to link the app and the database containers together and here we set the environment variable to ensure they can communicate with each other.
+
+Enter the following code into the `docker-compose.yml` file (INDENTATION IS IMPORTANT)
+
+```
+version: "3"
+services:
+  
+  mongodb:
+    container_name: put mongo container id here
+    image: mongo
+    volumes:
+      - ~/mongo:/data/db
+    ports:
+      - "27017:27017"
+
+  nodeapp:
+    container_name: put app container id here
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=mongodb://mongodb:27017/posts
+    ports:
+      - "80:3000"
+    links:
+      - mongodb
+```
+Lets break it down into sections and add a small comment about the commands
+```
+version: "3" 
+services:
+  
+  mongodb:
+    container_name: put mongo container id here
+    image: mongo
+    volumes:
+      - ~/mongo:/data/db # To stop data being erased when the app is off
+    ports:
+      - "27017:27017" # Mongo listens on port 27017
+```
+
+```
+ nodeapp:
+    container_name: put app container id here
+    restart: always
+    build:
+      context: . # defines a path to a directory containing a Dockerfile
+      dockerfile: Dockerfile # allows to set an alternate Dockerfile. A relative path MUST be resolved from the build context.
+    environment:
+      - DB_HOST=mongodb://mongodb:27017/posts # Set the environment variable
+    ports:
+      - "80:3000" # We can set our reverse proxy through port mapping
+    links:
+      - mongodb # This will link the database container to the app container
+```
+```
+To understand more about compose files visit the official documentation from Docker here: 
+https://docs.docker.com/compose/compose-file/
+```
+
+- Once the docker-compose.yml file has been saved, ensure you are in the same folder as the Dockerfile and docker-compose.yml file
+
+- Before running the next command, ensure all other containers have been stopped and there are no containers running. 
+
+- Run `docker compose up`
+
+- Once the command has been executed you should be able to navigate to `localhost` on the web browser and see the app running
+
+- If you navigate to `localhost/fibonacci/9` you should see the fibonacci page
+
+- And the most important one which links the database to the app, if you navigate to `localhost/posts` you should be able to see the posts from the database
+
+
+If you are unable to see the database entries you DONT need to run the `docker compose down` command to seed the database. Just do the following while the app and db are still running
+
+```
+Open a new GitBash, Powershell etc as the one you are using will be occupied by the running app
+
+Navigate to the folder where the app is
+
+run the following command:
+docker exec -it appcontainerid sh
+
+Only if you get the TTY error run the following command:
+alias docker="winpty docker"
+Then re run the docker exec command
+
+Once inside the app container navigate to the app folder
+
+Run the following command:
+node seeds/seed.js
+
+The database should now be cleared and seeded.
+
+Type exit to get out of the machine
+```
+
+Now all you have to do is refresh the `localhost/posts` page and the database entries should appear!
