@@ -2062,3 +2062,296 @@ Type exit to get out of the machine
 ```
 
 Now all you have to do is refresh the `localhost/posts` page and the database entries should appear!
+
+
+# Kubernetes (K8)
+
+## What is Kubernetes?
+Kubernetes is a portable, extensible, open source platform for managing containerized workloads and services, that facilitates both declarative configuration and automation. It has a large, rapidly growing ecosystem. Kubernetes services, support, and tools are widely available.
+
+## Why Kubernetes
+- Containers are a good way to bundle and run your applications. In a production environment, you need to manage the containers that run the applications and ensure that there is no downtime. For example, if a container goes down, another container needs to start. Wouldn't it be easier if this behavior was handled by a system?
+
+That's how Kubernetes comes to the rescue! Kubernetes provides you with a framework to run distributed systems resiliently. It takes care of scaling and failover for your application, provides deployment patterns, and more. For example, Kubernetes can easily manage a canary deployment for your system.
+
+Kubernetes provides you with:
+
+- Service discovery and load balancing: Kubernetes can expose a container using the DNS name or using their own IP address. If traffic to a container is high, Kubernetes is able to load balance and distribute the network traffic so that the deployment is stable.
+Storage orchestration Kubernetes allows you to automatically mount a storage system of your choice, such as local storages, public cloud providers, and more.
+- Automated rollouts and rollbacks: You can describe the desired state for your deployed containers using Kubernetes, and it can change the actual state to the desired state at a controlled rate. For example, you can automate Kubernetes to create new containers for your deployment, remove existing containers and adopt all their resources to the new container.
+- Automatic bin packing: You provide Kubernetes with a cluster of nodes that it can use to run containerized tasks. You tell Kubernetes how much CPU and memory (RAM) each container needs. Kubernetes can fit containers onto your nodes to make the best use of your resources.
+- Self-healing: Kubernetes restarts containers that fail, replaces containers, kills containers that don't respond to your user-defined health check, and doesn't advertise them to clients until they are ready to serve.
+- Secret and configuration management: Kubernetes lets you store and manage sensitive information, such as passwords, OAuth tokens, and SSH keys. You can deploy and update secrets and application configuration without rebuilding your container images, and without exposing secrets in your stack configuration.
+
+K8 Commands
+- `kubectl` 
+- `kubeclt get svc` 
+- `kubectl get deploy`
+- `kubectl get pods`
+- `kubectl delete svc nameofservice` 
+- `kubectl get rs`
+- `kubectl get all`
+- `kubectl edit svc/name of service`
+- `kubectl edit deploy/name of deployment`
+
+To delete a whole deployment or a whole service
+- `kubectl delete deploy nameofdeployment`
+- `kubectl delete svc nameofservice`
+
+NEVER DELETE THE KUBERNETES SERVICE
+
+### To create an nginx cluster
+- Create a file called nginx-deploy.yml
+- Enter the code
+```
+apiVersion: apps/v1
+kind: Deployment # Pod, service # replicaset # ASG
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always  
+```
+- Save the file
+- Run the following command
+- `kubectl create -f nginx-deploy.yml` 
+- `kubectl get deploy` - To see info deployments
+- `kubectl get pods` - To see info about the pods
+- `kubectl describe deploy nginx` - To see info about the nginx deployment
+- Create a new file called `nginx-svc.yml`
+- Enter the code
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30442 # Use this port in the browser # 30000-302222
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+  type: NodePort
+```
+- Save the file
+- Run the following command
+- `kubectl create -f nginx-svc.yml`
+- `kubectl get svc`
+- `kubectl get pods`
+
+To delete a pod
+- `kubectl delete pod podname`
+
+
+
+## Task one
+Getting the app and db to connect to each other and see /posts in the browser
+
+Create 4 files
+
+`mongo-deploy.yml`
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          imagePullPolicy: Always
+```
+`mongo-svc.yml`
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+```
+`app-deploy.yml`
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp
+spec:
+  selector:
+    matchLabels:
+      app: nodeapp
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+        - name: nodeapp
+          image: akshay2323/node-app
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: mongodb://cluster.ip.of.mongo.service:27017/posts
+          imagePullPolicy: Always
+```
+`app-svc.yml`
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30441
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: nodeapp
+  type: NodePort
+```
+Firstly you want to run the following 2 commands to create the service and deploy mongo
+```
+kubectl create -f mongo-deploy.yml
+kubectl create -f mongo-svc.yml
+```
+
+Now we need to get the cluster IP of the mongo service to be able to set the environment variable in the `app-deploy.yml` file. Run the following command:
+
+```
+kubectl get svc
+```
+Get the cluster IP for the mongo service and enter that ip in `app-deploy.yml` under `env` where it says `cluster.ip.of.mongo.service`.
+
+Save that file and then run the following commands
+
+```
+kubectl create -f app-deploy.yml
+kubectl create -f app-svc.yml
+```
+
+Now as long as there are no errors you should navigate to `localhost:33401/posts` and see the database posts
+
+If you cant see the posts and need to seed the database, you can do this while the app is up and running.
+
+```
+kubectl get pods
+
+Copy one of the nodeapp pod names
+
+Now run the following command:
+kubectl exec nameofpod env node seeds/seed.js
+```
+
+Now refresh the browser and the posts should appear!!
+
+## K8 Architecture
+
+![](images/K8_Architecture2.png)
+
+Lets break down some of the different components in the Architecture to understand it a bit better
+
+## Control plane
+- The nerve center of the cluster
+- This is where the Kubernetes components that control the cluster and data about the cluster’s state and configuration is located.
+- These Kubernetes components handle making sure your containers are running in sufficient numbers and with the necessary resources. 
+- In constant contact with your compute machines. 
+- Makes sure it configures the cluster to run in the way you want it to.
+
+### kube-apiserver
+- Interacts with your Kubernetes cluster and talks to the API.
+- This is the front end of the Kubernetes control plane, handling internal and external requests. 
+- Determines if a request is valid and, if it is, processes it. 
+- You can access the API through REST calls, through the kubectl command-line interface, or through other command-line tools such as kubeadm.
+
+### kube-scheduler
+- Checks if your cluster is healthy and where to fit new containers if needed.
+- Considers the resource needs of a pod, such as CPU or memory, along with the health of the cluster. Then it schedules the pod to an appropriate compute node.
+
+### kube-controller-manager
+- Takes care of actually running the cluster.
+- Kubernetes controller-manager contains several controller functions in one. 
+- One controller consults the scheduler and makes sure the correct number of pods is running. If a pod goes down, another controller notices and responds (This is where self healing happens).
+- Connects services to pods, so requests go to the right endpoints. And there are controllers for creating accounts and API access tokens.
+
+### etcd
+- Configuration data and information about the state of the cluster lives in etcd, a key-value store database. 
+- Fault-tolerant and distributed 
+- etcd is designed to be the ultimate source of truth about your cluster.
+
+## What happens in a Kubernetes node?
+### Nodes
+- A Kubernetes cluster needs at least one compute node, but will more than likely have more.
+- Pods are scheduled and orchestrated to run on nodes.
+- Can add more nodes to scale up the cluster
+
+### Pods
+- A pod is the smallest and simplest unit in the Kubernetes object model.
+- It represents a single instance of an application. 
+- Each pod is made up of a container or a series of tightly coupled containers, along with options that govern how the containers are run. 
+- Pods can be connected to persistent storage in order to run stateful applications.
+
+### Container runtime engine
+- To run the containers, each compute node has a container runtime engine. 
+- Docker is one example, but Kubernetes supports other Open Container Initiative-compliant runtimes as well, such as rkt and CRI-O.
+
+### kubelet
+- Each compute node contains a kubelet, a tiny application that communicates with the control plane.
+- The kublet makes sure containers are running in a pod. 
+- When the control plane needs something to happen in a node, the kubelet executes the action.
+
+### kube-proxy
+- Each compute node has a kube-proxy which is a network proxy for facilitating Kubernetes networking services. 
+- The kube-proxy handles network communications inside or outside of your cluster. Relying either on your operating system’s packet filtering layer, or forwarding the traffic itself.
+
+## What other things do Kubernetes clusters need?
+### Persistent storage
+- Beyond just managing the containers that run an application, Kubernetes can also manage the application data attached to a cluster. 
+- Kubernetes allows users to request storage resources without having to know the details of the underlying storage infrastructure. 
+- Persistent volumes are specific to a cluster, rather than a pod, and thus can outlive the life of a pod.
+
+### Container registry
+- The container images that Kubernetes relies on are stored in a container registry. This can be a registry you configure, or a third party registry.
+
+### Underlying infrastructure
+- Where you run Kubernetes. 
+- This can be bare metal servers, virtual machines, public cloud providers, private clouds, and hybrid cloud environments. 
+- One of Kubernetes’s key advantages is it works on many different kinds of infrastructure.

@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30442 # Use this port in the browser # 30000-302222
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx
+  type: NodePort # can be NodePort, cluster, LoadBalancer      
+
+# 3 types of svc: cluster-ip, NodePort, LoadBalancer

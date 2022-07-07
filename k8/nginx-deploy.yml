@@ -1,0 +1,28 @@
+---
+# SYNTAX AND INDENTATION IS HIGHLY IMPORTANT WIH K8 AND YML
+
+# Which version of API's for Deployment - K8 official doc
+apiVersion: apps/v1
+
+kind: Deployment # Pod, service # replicaset # ASG
+
+# Metadata to name your deployment - case insensitive
+metadata:
+  name: nginx
+spec:
+# labels and selectors are the communication channels between micro-services
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always    
