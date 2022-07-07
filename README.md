@@ -2339,7 +2339,7 @@ spec:
             - containerPort: 3000
           env:
             - name: DB_HOST
-              value: mongodb://10.105.66.7:27017/posts
+              value: mongodb://cluster.ip.of.mongo.service:27017/posts
           imagePullPolicy: Always
 
 ---
