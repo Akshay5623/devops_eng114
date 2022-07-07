@@ -2283,6 +2283,82 @@ kubectl exec nameofpod env node seeds/seed.js
 
 Now refresh the browser and the posts should appear!!
 
+### Single code block
+```
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodeapp
+spec:
+  selector:
+    matchLabels:
+      app: nodeapp
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: nodeapp
+    spec:
+      containers:
+        - name: nodeapp
+          image: akshay2323/node-app
+          ports:
+            - containerPort: 3000
+          env:
+            - name: DB_HOST
+              value: mongodb://10.105.66.7:27017/posts
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodeapp
+  namespace: default
+spec:
+  ports:
+  - nodePort: 30441
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: nodeapp
+  type: NodePort
+```
+
 ## K8 Architecture
 
 ![](images/K8_Architecture2.png)
